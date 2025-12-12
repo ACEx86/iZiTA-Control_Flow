@@ -18,7 +18,7 @@ namespace iZiTA
     //</editor-fold>
     /**
      * iZiTA::Control_Flow<br>
-     * Script version: 25.12.0.46<br>
+     * Script version: 25.12.0.52<br>
      * PHP Version: 8.5<br>
      * @package iZiTA::Control_Flow
      * @author : TheTimeAuthority
@@ -620,16 +620,16 @@ namespace iZiTA
                     $is_depth = $this->Script_Depth + 1;
                     if($is_depth === $value)
                     {# Allow only +1 values
-                        $Current_Script_Access = $this->Current_Script_Access;
-                        $is_Sub_Script_Depth = $this->Sub_Script_Depth;
-                        if(isset($this->Control_Flow_Database[$is_depth]) === True and isset($this->Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth + 1]) === False and isset($this->Shadow_Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth]) === True and isset($this->Shadow_Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth + 1]) === False)
+                        $Current_Script_Access = ($this->Current_Script_Access ?? '');
+                        $is_Sub_Script_Depth = ($this->Sub_Script_Depth ?? 0);
+                        if(isset($this->Control_Flow_Database[$is_depth]) === True and isset($this->Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth]) === True and isset($this->Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth + 1]) === False and isset($this->Shadow_Control_Flow_Database[$is_depth]) === False and isset($this->Shadow_Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth]) === True and isset($this->Shadow_Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth + 1]) === False)
                         {# Checks before adding: next depth exist, if no next place exist, is at last depth.
                             $Shadow_Data = $this->Shadow_Control_Flow_Database;
                             $Enrol_Next_Depth = False;
                             $Shadow_Corruption_Status = 0;
                             if(is_array($Shadow_Data) === True and empty($Shadow_Data) === False)
                             {
-                                $is_Shadow_Data = $this->Data->Array_To_String($Shadow_Data, '#');
+                                $is_Shadow_Data = ($this->Data->Array_To_String($Shadow_Data, '#') ?? '');
                                 $z = 0;
                                 if(str_contains($is_Shadow_Data, '#') === True)
                                 {
@@ -690,7 +690,6 @@ namespace iZiTA
                     $Current_Script_Access = ($this->Current_Script_Access ?? '');
                     if($value === 0)
                     {# Set up the next Script_Depth.
-                        echo 'SS';
                         $Script_Depth_Minus = 0;
                         $Sub_Depth_Start = $is_Sub_Script_Depth;
                         if($Script_Depth > 0)
@@ -1043,7 +1042,7 @@ namespace iZiTA
                         echo PHP_EOL.' [ D ] ( Execution_Guard )                  Action';
                     }
                 }else
-                {# TODO : Drop
+                {
                     echo PHP_EOL.' [ D ] ( Execution_Guard )                  Killing execution for: '.$get_ScriptDepth.$get_Current_Script_Access.$get_Sub_Script_Depth.$Action.' : '.$this->Sub_Script_Depth;
                     $this->Execution_Expelliarmus = True;
                 }
