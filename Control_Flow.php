@@ -1225,16 +1225,14 @@ namespace iZiTA
          */
         Final Function Get_Script_Depth(): Int|Bool
         {
-            if(isset($this->Script_Depth) === True)
+            $Script_Depth = ($this->Script_Depth ?? False) ?: ($Script_Depth = 0);
+            if(is_int($Script_Depth) === True and $Script_Depth === $this->Script_Depth)
             {
-                $Script_Depth = 0;
-                $Script_Depth = ($this->Script_Depth ?? 0) ?: ($Script_Depth = 0);
-                if(is_int($Script_Depth) === True and $Script_Depth === $this->Script_Depth)
-                {
-                    return $Script_Depth;
-                }
+                return $Script_Depth;
+            }else
+            {
+                return False;
             }
-            return False;
         }
         //</editor-fold>
         //<editor-fold desc="Final Shared Functions">
