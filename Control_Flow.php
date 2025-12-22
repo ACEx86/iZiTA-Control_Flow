@@ -7,14 +7,18 @@ namespace iZiTA
 {
     //<editor-fold desc="Initialization Process">
     date_default_timezone_set('UTC');
+    //<editor-fold desc="Check Startup">
+    $included_files = False;
+    ((__FILE__ ?? $included_files = True) === (get_included_files()[0] ?? $included_files = True)) ? True : ($included_files === False ? False : True) and exit;
+    //</editor-fold>
     defined('iZiTA>Control_Flow') or exit;
     define('iZiTA>Data', False);
     //</editor-fold>
     //<editor-fold desc="Test Use Settings">
-    #error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
-    error_reporting(0);
-    ini_set('display_errors', '0');
-    ini_set('display_startup_errors', '0');
+    error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
+    #error_reporting(9);
+    ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
     //</editor-fold>
     /**
      * iZiTA::Control_Flow<br>
@@ -34,8 +38,10 @@ namespace iZiTA
         Final Function __construct(String $Token_Database_Path = '')
         {
             echo PHP_EOL.' [ I ] ( Control_Flow Class )               Initializing Control Flow Class';
-            (require_once 'Data.php') ?: exit;
-            class_exists(\iZiTA\Data::class, False) && !enum_exists(\iZiTA\Data::class, False) ? (($this->Data = new Data() ?? exit) ? (($this->is_Data = True ?? exit) ?: exit) : exit) : exit;
+            (require_once 'Data.php' ?? exit) ?: exit;
+            (require_once 'Logger.php' ?? exit) ?: exit;
+            (class_exists(\iZiTA\Data::class, False) && enum_exists(\iZiTA\Data::class, False) === False) ? (($this->Data = new Data() ?? exit) ? (($this->is_Data = True ?? exit) ?: exit) : exit) : exit;
+            (class_exists(\iZiTA\Logger::class, False) && enum_exists(\iZiTA\Logger::class, False) === False) ?: exit;
             $is_configuration_loaded = False;
             $is_configuration_loaded = ($this->Load_Configuration($Token_Database_Path) ?? False) ?: ($is_configuration_loaded = False);
             if(is_array($is_configuration_loaded) === True and empty($is_configuration_loaded) === False)
@@ -136,12 +142,12 @@ namespace iZiTA
                                     $Sub_Script_Depth = 0;
                                     $Sub_Script_Depth = substr_count($Other_Actions, ';') ?: $Sub_Script_Depth = -1;
                                     $Other_Actions = explode(';', $Other_Actions) ?: $Sub_Script_Depth = -1;
-                                    for($YSSD = 0; $YSSD < $Sub_Script_Depth; $YSSD++)
+                                    for($Sub = 0; $Sub < $Sub_Script_Depth; $Sub++)
                                     {# Load the sub script depth
                                         $Sub_Action = '';
-                                        $Sub_Action = (explode('=', $Other_Actions[$YSSD])[0] ?? null) ?: ($Sub_Action = False);
+                                        $Sub_Action = (explode('=', $Other_Actions[$Sub])[0] ?? null) ?: ($Sub_Action = False);
                                         $Sub_Action_Value = '';
-                                        $Sub_Action_Value = (explode('=', $Other_Actions[$YSSD])[1] ?? null) ?: ($Sub_Action_Value = False);
+                                        $Sub_Action_Value = (explode('=', $Other_Actions[$Sub])[1] ?? null) ?: ($Sub_Action_Value = False);
                                         if(isset($Sub_Action) === True and empty($Sub_Action) === False and is_string($Sub_Action) === True and isset($Sub_Action_Value) === True and empty($Sub_Action_Value) === False and is_string($Sub_Action_Value) === True and strlen($Sub_Action_Value) < 60)
                                         {# Validates and adds the sub script depth to the control flow database
                                             $is_valid_entry = true;
@@ -262,7 +268,7 @@ namespace iZiTA
          */
         Private Bool $Shadow_Execution_Token_OK_Status = False;
         /**
-         * @var bool When this is set to True it returns the status (isset, empty, strlen, etc) of the selected variable bypassing the getter code execution like emptying the variable on read.
+         * @var bool When this is set to True it returns the status (isset, empty, strlen, etc.) of the selected variable bypassing the getter code execution like emptying the variable on read.
          */
         Private Bool $Shadow_Execution_Token_Bypass_Return = False;
         Private Bool $Execution_Token_OK_Status = False;
@@ -296,12 +302,12 @@ namespace iZiTA
                         if(isset($this->Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth]) === False and isset($this->Shadow_Enroll_Guard[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth]) === False)
                         {# This array index for Shadow_Control_Flow and Shadow_Enroll_Guard should not exist.
                             $Control_Flow_Database = $this->Control_Flow_Database[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth];
-                            $Shadown_Next_Array_Index = (key($Control_Flow_Database) ?? '') ?: '';
-                            $Shadown_Next_Array_Key = (current($Control_Flow_Database) ?? '') ?: '';
+                            $Shadow_Next_Array_Index = (key($Control_Flow_Database) ?? '') ?: '';
+                            $Shadow_Next_Array_Key = (current($Control_Flow_Database) ?? '') ?: '';
                             if($Sub_Script_Depth > 0)
                             {
-                                if(isset($this->Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth - 1]) === True and isset($this->Shadow_Enroll_Guard[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth - 1]) === True and isset($this->Shadow_Enroll_Guard[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth][$Shadown_Next_Array_Index][$Shadown_Next_Array_Key]) === False)
-                                {# The Shadown_Control_Flow_Database index in pos - 1 from this one should exist
+                                if(isset($this->Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth - 1]) === True and isset($this->Shadow_Enroll_Guard[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth - 1]) === True and isset($this->Shadow_Enroll_Guard[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth][$Shadow_Next_Array_Index][$Shadow_Next_Array_Key]) === False)
+                                {# The Shadow_Control_Flow_Database index in pos - 1 from this one should exist
                                     $Out_Of_Bounds = False;
                                     if($Sub_Script_Depth - 2 > 0)
                                     {# Scan the array to verify that tokes exist before enrolling next shadow array index
@@ -334,11 +340,11 @@ namespace iZiTA
                                     {
                                         $Set_Shadow_Control_Flow_Database = [];
                                         $Set_Shadow_Control_Flow_Database = ($this->Shadow_Control_Flow_Database ?? []);
-                                        $Set_Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth][$Shadown_Next_Array_Index][$Shadown_Next_Array_Key] = '';
+                                        $Set_Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth][$Shadow_Next_Array_Index][$Shadow_Next_Array_Key] = '';
                                         $this->Shadow_Control_Flow_Database = $Set_Shadow_Control_Flow_Database;
                                         if($this->Shadow_Control_Flow_Database === $Set_Shadow_Control_Flow_Database)
                                         {# Set the array out of order.
-                                            $this->Shadow_Enroll_Guard[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth][$Shadown_Next_Array_Index][$Shadown_Next_Array_Key] = '';
+                                            $this->Shadow_Enroll_Guard[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth][$Shadow_Next_Array_Index][$Shadow_Next_Array_Key] = '';
                                         }else
                                         {#
                                             echo PHP_EOL.' [ ! ] ( Shadow_Enroll_Guard )              Critical: Error enrolling Shadow Control Flow.';
@@ -357,11 +363,11 @@ namespace iZiTA
                             {# We are at the beginning of a script depth.
                                 echo PHP_EOL.' [ + ] ( Shadow_Enroll_Guard )              Setting line for the begin of a script depth.';
                                 $Set_Shadow_Control_Flow_Database = $this->Shadow_Control_Flow_Database;
-                                $Set_Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth][$Shadown_Next_Array_Index][$Shadown_Next_Array_Key] = '';
+                                $Set_Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth][$Shadow_Next_Array_Index][$Shadow_Next_Array_Key] = '';
                                 $this->Shadow_Control_Flow_Database = $Set_Shadow_Control_Flow_Database;
                                 if($this->Shadow_Control_Flow_Database === $Set_Shadow_Control_Flow_Database)
                                 {# Set the array out of order.
-                                    $this->Shadow_Enroll_Guard[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth][$Shadown_Next_Array_Index][$Shadown_Next_Array_Key] = '';
+                                    $this->Shadow_Enroll_Guard[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth][$Shadow_Next_Array_Index][$Shadow_Next_Array_Key] = '';
                                 }else
                                 {#
                                     echo PHP_EOL.' [ ! ] ( Shadow_Enroll_Guard )              Critical: Error enrolling Shadow Control Flow.';
@@ -574,7 +580,6 @@ namespace iZiTA
                         $this->Shadow_Execution_Token_OK_Status = True;
                         return $trampoline;
                     }
-                    return '';
                 }
                 set(String $SET_Value)
                 {
@@ -1013,7 +1018,7 @@ namespace iZiTA
                 {
                     $OK_MESSAGE = '';
                     $OK_MESSAGE = ($this->Control_Flow_Database[$get_ScriptDepth][$get_Current_Script_Access][$get_Sub_Script_Depth][$Action] ?? '') ?: $OK_MESSAGE = '';
-                    if(isset($OK_MESSAGE) === True and empty($OK_MESSAGE) === False and is_string($OK_MESSAGE) === True and strlen($OK_MESSAGE) < 50 and isset($this->Shadow_Control_Flow_Database[$get_ScriptDepth][$get_Current_Script_Access][$get_Sub_Script_Depth][$Action][$OK_MESSAGE]) === True and empty($this->Shadow_Control_Flow_Database[$get_ScriptDepth][$get_Current_Script_Access][$get_Sub_Script_Depth][$Action][$OK_MESSAGE]) === True and isset($this->Shadow_Control_Flow_Tokens[$Execution_Token]) === False)
+                    if(isset($OK_MESSAGE) === True and empty($OK_MESSAGE) === False and is_string($OK_MESSAGE) === True and isset($OK_MESSAGE[50]) === False and isset($this->Shadow_Control_Flow_Database[$get_ScriptDepth][$get_Current_Script_Access][$get_Sub_Script_Depth][$Action][$OK_MESSAGE]) === True and empty($this->Shadow_Control_Flow_Database[$get_ScriptDepth][$get_Current_Script_Access][$get_Sub_Script_Depth][$Action][$OK_MESSAGE]) === True and isset($this->Shadow_Control_Flow_Tokens[$Execution_Token]) === False)
                     {
                         $temp_token = '';
                         $temp_token = $this->GenerateHash() ?: $temp_token = '';
@@ -1052,9 +1057,7 @@ namespace iZiTA
         //</editor-fold>
         Private Function GenerateHash(): String
         {
-            $Token = '';
-            $Token = hash('sha3-256', rand(1000000,9999999).rand(1000000000,9999999999).rand(10000000000000,99999999999999).rand(1000000,9999999).rand(10000000000000,99999999999999).rand(1000000000,9999999999).rand(1000000,9999999)) ?: $Token = 'Error generating hash.          ';
-            return $Token;
+            return (hash('sha3-256', rand(1000000,9999999).rand(1000000000,9999999999).rand(10000000000000,99999999999999).rand(1000000,9999999).rand(10000000000000,99999999999999).rand(1000000000,9999999999).rand(1000000,9999999)) ?: 'Error');
         }
         //</editor-fold>
         //<editor-fold desc="Shared Functions">
@@ -1249,4 +1252,4 @@ namespace iZiTA
         //</editor-fold>
         //</editor-fold>
     }
-}?>
+}
