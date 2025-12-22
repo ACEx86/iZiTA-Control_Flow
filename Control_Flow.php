@@ -6,7 +6,6 @@ declare(strict_types=1);
 namespace iZiTA
 {
     //<editor-fold desc="Initialization Process">
-    date_default_timezone_set('UTC');
     //<editor-fold desc="Check Startup">
     $included_files = False;
     ((__FILE__ ?? $included_files = True) === (get_included_files()[0] ?? $included_files = True)) ? True : ($included_files === False ? False : True) and exit;
@@ -14,6 +13,7 @@ namespace iZiTA
     defined('iZiTA>Control_Flow') or exit;
     define('iZiTA>Data', False);
     //</editor-fold>
+    date_default_timezone_set('UTC');
     //<editor-fold desc="Test Use Settings">
     error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
     #error_reporting(9);
