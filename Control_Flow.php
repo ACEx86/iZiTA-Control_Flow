@@ -241,6 +241,8 @@ namespace iZiTA
                 {
                     if(isset($this->is_Data) === False and empty($this->Data) === True and isset($Data_Object) === True and ($Data_Object instanceof Data) === True)
                     {
+                        $Data_Object = null;
+                        unset($Data_Object);
                         $this->Data = new Data();
                     }
                 }
