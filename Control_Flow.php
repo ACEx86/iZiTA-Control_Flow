@@ -22,7 +22,7 @@ namespace iZiTA
     //</editor-fold>
     /**
      * iZiTA::Control_Flow<br>
-     * Script version: 25.12.0.52<br>
+     * Script version: 25.12.0.55<br>
      * PHP Version: 8.5<br>
      * @package iZiTA::Control_Flow
      * @author : TheTimeAuthority
@@ -44,9 +44,9 @@ namespace iZiTA
             (class_exists(\iZiTA\Logger::class, False) && enum_exists(\iZiTA\Logger::class, False) === False) ?: exit;
             $is_configuration_loaded = False;
             $is_configuration_loaded = ($this->Load_Configuration($Token_Database_Path) ?? False) ?: ($is_configuration_loaded = False);
-            if(is_array($is_configuration_loaded) === True and empty($is_configuration_loaded) === False)
+            if(is_array($is_configuration_loaded) === True and empty($is_configuration_loaded) === False and isset($this->Control_Flow_Database) === False)
             {
-                $this->Control_Flow_Database = $is_configuration_loaded;
+                $this->Control_Flow_Database = $is_configuration_loaded ?: exit;
                 if(isset($this->Control_Flow_Database) === True and $this->Control_Flow_Database === $is_configuration_loaded)
                 {
                     $this->is_configuration_loaded = True ?: exit;
@@ -241,7 +241,7 @@ namespace iZiTA
                 {
                     if(isset($this->is_Data) === False and empty($this->Data) === True and isset($Data_Object) === True and ($Data_Object instanceof Data) === True)
                     {
-                        $this->Data = $Data_Object;
+                        $this->Data = new Data();
                     }
                 }
             }
