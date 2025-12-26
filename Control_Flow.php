@@ -22,7 +22,7 @@ namespace iZiTA
     //</editor-fold>
     /**
      * iZiTA::Control_Flow<br>
-     * Script version: 25.12.0.55<br>
+     * Script version: 25.12.0.57<br>
      * PHP Version: 8.5<br>
      * Details: iZiTA::Control Flow is a library to manage execution and variable reads/writes based on access, usage state and execution.
      * @package iZiTA::Control_Flow
@@ -122,11 +122,8 @@ namespace iZiTA
                                 {
                                     continue;
                                 }
-                                if(str_contains($Current_Script_Depth, '|') === True)
-                                {
-                                    $Current_Action = (explode('|', $Current_Script_Depth)[0] ?? '') ?: $Current_Action = '';
-                                    $Other_Actions = (explode('|', $Current_Script_Depth)[1] ?? '') ?: $Other_Actions = '';
-                                }
+                                $Current_Action = (explode('|', $Current_Script_Depth)[0] ?? '') ?: $Current_Action = '';
+                                $Other_Actions = (explode('|', $Current_Script_Depth)[1] ?? '') ?: $Other_Actions = '';
                                 if(empty($Current_Action) === False)
                                 {
                                     $Current_Action = preg_replace("/[^A-Z_]/", '', $Current_Action) ?: $Current_Action = '';
@@ -140,19 +137,16 @@ namespace iZiTA
                                 } # # # END Struct
                                 if(empty($Current_Script_Depth) === False and empty($Current_Action) === False and empty($Other_Actions) === False and empty($Equals_Sign_Value) === False and empty($is_not_nothing) === False and empty(explode(';', $Equals_Sign_Value)[0]) === False)
                                 {# Validates execution control flow database
-                                    $Sub_Script_Depth = 0;
-                                    $Sub_Script_Depth = substr_count($Other_Actions, ';') ?: $Sub_Script_Depth = -1;
                                     $Other_Actions = explode(';', $Other_Actions) ?: $Sub_Script_Depth = -1;
-                                    for($Sub = 0; $Sub < $Sub_Script_Depth; $Sub++)
-                                    {# Load the sub script depth
+                                    foreach($Other_Actions as $Other_Action)
+                                    {
                                         $Sub_Action = '';
-                                        $Sub_Action = (explode('=', $Other_Actions[$Sub])[0] ?? null) ?: ($Sub_Action = False);
                                         $Sub_Action_Value = '';
-                                        $Sub_Action_Value = (explode('=', $Other_Actions[$Sub])[1] ?? null) ?: ($Sub_Action_Value = False);
-                                        if(isset($Sub_Action) === True and empty($Sub_Action) === False and is_string($Sub_Action) === True and isset($Sub_Action_Value) === True and empty($Sub_Action_Value) === False and is_string($Sub_Action_Value) === True and strlen($Sub_Action_Value) < 60)
+                                        [$Sub_Action, $Sub_Action_Value] = (explode('=', $Other_Action, 2) ?? '') ?: ($Sub_Action = False)($Sub_Action_Value = False);
+                                        if(isset($Sub_Action) === True and empty($Sub_Action) === False and is_string($Sub_Action) === True and isset($Sub_Action_Value) === True and empty($Sub_Action_Value) === False and is_string($Sub_Action_Value) === True and isset($Sub_Action_Value[60]) === False)
                                         {# Validates and adds the sub script depth to the control flow database
                                             $is_valid_entry = true;
-                                            $Control_Flow_Database[$Positive_X][$Current_Action][][$Sub_Action] = $Sub_Action_Value;
+                                            $Control_Flow_Database[$Positive_X][$Current_Action][] = [$Sub_Action => $Sub_Action_Value];
                                             $Sub_Action = '';
                                             $Sub_Action_Value = '';
                                         }
@@ -384,7 +378,7 @@ namespace iZiTA
                     {
                         echo PHP_EOL.' [ !! ] ( Shadow_Enroll_Guard )             Error enrolling next control flow in: '.$Script_Depth.' : '.$Current_Script_Access.' : '.$Sub_Script_Depth;
                     }
-                    return [];
+                    return [''];
                 }
                 set(array $value)
                 {
@@ -724,6 +718,8 @@ namespace iZiTA
                             {
                                 echo PHP_EOL.' [ ! ] ( Sub_Script_Depth )                 Failed enrolling guard.';
                             }
+                            $tmp_void = null;
+                            unset($tmp_void);
                         }else
                         {
                             echo PHP_EOL.' [ ! ] ( Sub_Script_Depth )                 Exiting: Out of bounds. [ ' . $this->Script_Depth.':' . $this->Sub_Script_Depth . ' ]';
