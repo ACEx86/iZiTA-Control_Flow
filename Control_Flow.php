@@ -22,7 +22,7 @@ namespace iZiTA
     //</editor-fold>
     /**
      * iZiTA::Control_Flow<br>
-     * Script version: 25.12.0.61<br>
+     * Script version: 25.12.0.62<br>
      * PHP Version: 8.5<br>
      * Details: iZiTA::Control Flow is a library to manage execution and variable reads/writes based on access, usage state and execution.
      * @package iZiTA::Control_Flow
@@ -678,12 +678,12 @@ namespace iZiTA
                 {
                     return $this->Sub_Script_Depth;
                 }
-                set(Int $value)
+                set(Int $Set_SSD)
                 {
                     $Script_Depth = ($this->Script_Depth ?? 0);
                     $is_Sub_Script_Depth = $this->Sub_Script_Depth + 1;
                     $Current_Script_Access = ($this->Current_Script_Access ?? '');
-                    if($value === 0)
+                    if($Set_SSD === 0)
                     {# Set up the next Script_Depth.
                         $Script_Depth_Minus = 0;
                         $Sub_Depth_Start = $is_Sub_Script_Depth;
@@ -718,15 +718,15 @@ namespace iZiTA
                             echo PHP_EOL.' [ ! ] ( Sub_Script_Depth )                 Exiting: Out of bounds. [ ' . $this->Script_Depth.':' . $this->Sub_Script_Depth . ' ]';
                             $this->Execution_Expelliarmus = True;
                         }
-                    }elseif($is_Sub_Script_Depth === $value)
+                    }elseif($is_Sub_Script_Depth === $Set_SSD)
                     {# Set up the next Sub_Script_Depth
                         if(isset($this->Control_Flow_Database[$Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth]) === True and isset($this->Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth]) === False and isset($this->Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth-1]) === True)
                         {# If next Sub_Script_Depth that is to be enrolled is in readonly Control_Flow_Database database and isn't in Shadow_Control_Flow_Database and on Shadow the current one exist
                             $is_to_Enroll = False;
                             if(isset($this->Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth - 2]) === True)
                             {# [$is_Sub_Script_Depth - 2]
-                                $Get_ = $this->Data->Array_To_String($this->Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth - 2], '#');
-                                if(substr_count($Get_, '#') === 2 and strlen(explode('#', $Get_)[2]) === 64)
+                                $is_Registered = current((current(($this->Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth - 2] ?? [])) ?? []));
+                                if(isset($is_Registered[63]) === True)
                                 {
                                     $is_to_Enroll = True;
                                 }
