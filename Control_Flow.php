@@ -11,7 +11,7 @@ namespace iZiTA
     ((__FILE__ ?? $included_files = True) === (get_included_files()[0] ?? $included_files = True)) ? True : ($included_files === False ? False : True) and exit;
     //</editor-fold>
     defined('iZiTA>Control_Flow') or exit;
-    define('iZiTA>Data', False);
+    defined('iZiTA>Data') or define('iZiTA>Data', False) or exit;
     //</editor-fold>
     date_default_timezone_set('UTC');
     //<editor-fold desc="Test Use Settings">
@@ -22,7 +22,7 @@ namespace iZiTA
     //</editor-fold>
     /**
      * iZiTA::Control_Flow<br>
-     * Script version: 25.12.0.63<br>
+     * Script version: 25.12.0.68<br>
      * PHP Version: 8.5<br>
      * Details: iZiTA::Control Flow is a library to manage execution and variable reads/writes based on access, usage state and execution.
      * @package iZiTA::Control_Flow
@@ -36,13 +36,36 @@ namespace iZiTA
          * @param String $Token_Database_Path is the path to load the configuration file from.<br>
          * If a file is not provided the script will exit.
          */
-        Final Function __construct(String $Token_Database_Path = '')
+        Final Function __construct(String $Token_Database_Path = '', String $Execution_Token = '')
         {
-            echo PHP_EOL.' [ I ] ( Control_Flow Class )               Initializing Control Flow Class';
+            if(isset($Token_Database_Path) === False or empty($Token_Database_Path) === True)
+            {
+                echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Initialization failed. Empty configuration file.';
+                die;
+            }elseif(isset($Execution_Token) === False or empty($Execution_Token) === True)
+            {
+                echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Initialization failed. Empty execution token.';
+                die;
+            }else
+            {
+                if(mb_detect_encoding($Token_Database_Path, 'UTF-8', true) === 'UTF-8' and mb_detect_encoding($Execution_Token, 'UTF-8', true) === 'UTF-8')
+                {
+                    if($this->is_Class_Allowed($Execution_Token) === False)
+                    {
+                        echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Initialization failed.';
+                        die;
+                    }
+                }else
+                {
+                    echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Initialization failed.';
+                    die;
+                }
+            }
+            echo PHP_EOL.' [ I ] ( Control_Flow Class )               Initializing Control Flow Class.';
             (require_once 'Data.php' ?? exit) ?: exit;
             (require_once 'Logger.php' ?? exit) ?: exit;
-            (class_exists(\iZiTA\Data::class, False) && enum_exists(\iZiTA\Data::class, False) === False) ? (($this->Data = new Data() ?? exit) ? (($this->is_Data = True ?? exit) ?: exit) : exit) : exit;
-            (class_exists(\iZiTA\Logger::class, False) && enum_exists(\iZiTA\Logger::class, False) === False) ?: exit;
+            (class_exists(\iZiTA\Data::class, False) === True && enum_exists(\iZiTA\Data::class, False) === False) ? (($this->Data = new Data() ?? exit) ? (($this->is_Data = True ?? exit) ?: exit) : exit) : exit;
+            (class_exists(\iZiTA\Logger::class, False) === True && enum_exists(\iZiTA\Logger::class, False) === False) ?: exit;
             $is_configuration_loaded = False;
             $is_configuration_loaded = ($this->Load_Configuration($Token_Database_Path) ?? False) ?: ($is_configuration_loaded = False);
             if(is_array($is_configuration_loaded) === True and empty($is_configuration_loaded) === False and isset($this->Control_Flow_Database) === False)
@@ -65,12 +88,76 @@ namespace iZiTA
             unset($is_configuration_loaded);
         }
         /**
+         * Check if the Class is allowed.
+         * @param String $Execution_Token
+         * @return bool Returns <b>True</b> if allowed to execute <b>False</b> otherwise.
+         */
+        Private Function is_Class_Allowed(String $Execution_Token = ''): Bool
+        {
+            if(isset($this->is_configuration_loaded) === True)
+            {
+                return False;
+            }
+            if(isset($Execution_Token) === True and empty($Execution_Token) === False and mb_detect_encoding($Execution_Token, 'UTF-8', true) === 'UTF-8' and isset($Execution_Token[63]) === True and isset($Execution_Token[64]) === False)
+            {
+                $Execution_Token = (preg_replace("/[^a-zA-Z0-9]/", '', $Execution_Token) ?? '') ?: '';
+                $Day_Month_Year = hash('sha3-256', date("d:m:Y")) ?: '';
+                $Execution_Token_File = '../Dba/InternalAccess/'.$Day_Month_Year.'/'.$Execution_Token.'.izita';
+                $Execution_Token = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+                $Day_Month_Year = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+                unset($Execution_Token);
+                unset($Day_Month_Year);
+                if(file_exists($Execution_Token_File) === True and filetype($Execution_Token_File) === 'file')
+                {
+                    $Execution_File_Size = (filesize($Execution_Token_File) ?? 0) ?: 0;
+                    if($Execution_File_Size === 2 or $Execution_File_Size === 1)
+                    {
+                        if($Execution_File_Size === 2)
+                        {
+                            echo PHP_EOL.' [ I ] ( Control_Flow Class )               Info: Execution file wrote through external sources.';
+                        }
+                        $read_execution_file = (file_get_contents($Execution_Token_File) ?? '') ?: '';
+                        file_put_contents($Execution_Token_File, '',LOCK_EX);
+                        unlink($Execution_Token_File);
+                        if(mb_detect_encoding($read_execution_file, 'UTF-8', true) === 'UTF-8')
+                        {
+                            $read_execution_file = (preg_replace("/[^2]/", '', $read_execution_file) ?? '') ?: '';
+                            if($read_execution_file === '2')
+                            {
+                                return True;
+                            }else
+                            {
+                                echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Error: Verifying execution access failed. No execution data.';
+                            }
+                        }else
+                        {
+                            echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Error: Verifying execution access failed. Wrong data data.';
+                        }
+                    }else
+                    {
+                        echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Error: Verifying execution access failed. Wrong file size.';
+                    }
+                }elseif(file_exists($Execution_Token_File) === False)
+                {
+                    echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Error: Execution path is not provided.';
+                }else
+                {
+                    echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Error: Execution path is malformed.';
+                }
+            }
+            return False;
+        }
+        /**
          * Loads the configuration file to be used for the Control_Flow of the Class.
          * @param String $Token_Database_Path Is the path to load the configuration from.
          * @return array | Bool Returns the database in array format False otherwise.
          */
         Private Function Load_Configuration(String $Token_Database_Path = ''): array|Bool
         {
+            if(isset($this->is_configuration_loaded) === True)
+            {
+                return False;
+            }
             $OK_Status = False;
             if(isset($this->is_configuration_loaded) === False and isset($this->Control_Flow_Database) === False and empty($this->Shadow_Control_Flow_Database) === True)
             {
@@ -173,11 +260,11 @@ namespace iZiTA
                     }
                 }else
                 {
-                    echo ' [ ! ] ( CF_LOAD_CONFIG )                   Empty configuration file.';
+                    echo PHP_EOL.' [ ! ] ( CF_LOAD_CONFIG )                   Empty configuration file.';
                 }
             }else
             {
-                echo ' [ ! ] ( CF_LOAD_CONFIG )                   Configuration already loaded.';
+                echo PHP_EOL.' [ ! ] ( CF_LOAD_CONFIG )                   Configuration already loaded.';
             }
             if(is_array($OK_Status) === True)
             {
@@ -189,6 +276,9 @@ namespace iZiTA
         }
         //</editor-fold>
         //<editor-fold desc="Terminate">
+        Final Function __destruct()
+        {
+        }
         /**
          * Spell caller.<br>
          * @var bool This bool is used to stop the script execution on control flow validation error.
@@ -210,7 +300,7 @@ namespace iZiTA
                 }
             }
         //</editor-fold>
-        //<editor-fold desc="Private Hooked Class Objects [v3]">
+        //<editor-fold desc="Private Hooked Class Objects [v4]">
         //<editor-fold desc="Private fail-safe indicators [v1]">
         Private ReadOnly Bool $is_Data;
         //</editor-fold>
@@ -223,15 +313,19 @@ namespace iZiTA
             {
                 get
                 {
-                    return $this->Data;
+                    if(isset($this->Data) === True)
+                    {
+                        return $this->Data;
+                    }
+                    return (Object)null;
                 }
                 set(Object $Data_Object)
                 {
                     if(isset($this->is_Data) === False and empty($this->Data) === True and isset($Data_Object) === True and ($Data_Object instanceof Data) === True)
                     {
+                        $this->Data = $Data_Object;
                         $Data_Object = null;
                         unset($Data_Object);
-                        $this->Data = new Data();
                     }
                 }
             }
@@ -610,16 +704,16 @@ namespace iZiTA
                 {
                     return $this->Script_Depth;
                 }
-                set(Int $value)
+                set(Int $Set_SD)
                 {
                     $is_depth = $this->Script_Depth + 1;
-                    if($is_depth === $value)
+                    if($is_depth === $Set_SD)
                     {# Allow only +1 values
-                        $Current_Script_Access = ($this->Current_Script_Access ?? '');
+                        $Current_Script_Access = ($this->Current_Script_Access ?? 'FAIL');
                         $is_Sub_Script_Depth = ($this->Sub_Script_Depth ?? 0);
-                        if(isset($this->Control_Flow_Database[$is_depth]) === True and isset($this->Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth]) === True and isset($this->Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth + 1]) === False and isset($this->Shadow_Control_Flow_Database[$is_depth]) === False and isset($this->Shadow_Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth]) === True and isset($this->Shadow_Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth + 1]) === False)
+                        if(isset($Current_Script_Access) === True and is_string($Current_Script_Access) === True and isset($is_Sub_Script_Depth) === True and is_integer($is_Sub_Script_Depth) === True and isset($this->Control_Flow_Database[$is_depth]) === True and isset($this->Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth]) === True and isset($this->Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth + 1]) === False and isset($this->Shadow_Control_Flow_Database[$is_depth]) === False and isset($this->Shadow_Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth]) === True and isset($this->Shadow_Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth + 1]) === False)
                         {# Checks before adding: next depth exist, if no next place exist, is at last depth.
-                            $Shadow_Data = $this->Shadow_Control_Flow_Database;
+                            $Shadow_Data = ($this->Shadow_Control_Flow_Database ?? 'FAIL');
                             $Enrol_Next_Depth = False;
                             $Shadow_Corruption_Status = 0;
                             if(is_array($Shadow_Data) === True and empty($Shadow_Data) === False)
@@ -633,9 +727,9 @@ namespace iZiTA
                                     $is_Shadow_Data = explode('#', $is_Shadow_Data);
                                 }
                                 for($x = 5; $x <= $z; $x += 6)
-                                {# Validate all the Shadow_Control_Flow_Database
+                                {# Scan and verify all the previous Shadow_Control_Flow_Database.
                                     $Shadow_Corruption_Status++;
-                                    if(isset($is_Shadow_Data[$x]) === False or strlen($is_Shadow_Data[$x]) !== 64)
+                                    if(isset($is_Shadow_Data[$x]) === False or is_string($is_Shadow_Data[$x]) === False or isset(($is_Shadow_Data[$x])[63]) === False)
                                     {
                                         $Enrol_Next_Depth = False;
                                         break;
