@@ -22,7 +22,7 @@ namespace iZiTA
     //</editor-fold>
     /**
      * iZiTA::Control_Flow<br>
-     * Script version: 25.12.0.68<br>
+     * Script version: 202601.0.0.71<br>
      * PHP Version: 8.5<br>
      * Details: iZiTA::Control Flow is a library to manage execution and variable reads/writes based on access, usage state and execution.
      * @package iZiTA::Control_Flow
@@ -30,22 +30,41 @@ namespace iZiTA
      */
     Final Class Control_Flow
     {
-        //<editor-fold desc="Initialize">
+        //<editor-fold desc="Control_Flow::Initialize [v2]">
         /**
          * The constructor for iZiTA::Control_Flow
          * @param String $Token_Database_Path is the path to load the configuration file from.<br>
          * If a file is not provided the script will exit.
+         * @param String $Execution_Token is the Token that allow the class to load.<br>
+         * If the Token is not correct the script will exit.
          */
-        Final Function __construct(String $Token_Database_Path = '', String $Execution_Token = '')
+        Final Static Function Construct(String $Token_Database_Path = '', String $Execution_Token = ''): Object|Null
+        {
+            if(self::$is_it_Constructed === False and self::$is_Construct_Tried === False)
+            {
+                self::$is_Construct_Tried = True;
+                $Constructor = new Control_Flow($Token_Database_Path, $Execution_Token);
+                if(self::$is_it_Constructed === True and isset($Constructor) === True and  is_object($Constructor) === True)
+                {
+                    return $Constructor;
+                }
+                unset($Constructor);
+            }
+            return null;
+        }
+        /**
+         * The constructor for iZiTA::Control_Flow
+         */
+        Final Private Function __construct(String $Token_Database_Path = '', String $Execution_Token = '')
         {
             if(isset($Token_Database_Path) === False or empty($Token_Database_Path) === True)
             {
                 echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Initialization failed. Empty configuration file.';
-                die;
+                exit;
             }elseif(isset($Execution_Token) === False or empty($Execution_Token) === True)
             {
                 echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Initialization failed. Empty execution token.';
-                die;
+                exit;
             }else
             {
                 if(mb_detect_encoding($Token_Database_Path, 'UTF-8', true) === 'UTF-8' and mb_detect_encoding($Execution_Token, 'UTF-8', true) === 'UTF-8')
@@ -53,12 +72,12 @@ namespace iZiTA
                     if($this->is_Class_Allowed($Execution_Token) === False)
                     {
                         echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Initialization failed.';
-                        die;
+                        exit;
                     }
                 }else
                 {
                     echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Initialization failed.';
-                    die;
+                    exit;
                 }
             }
             echo PHP_EOL.' [ I ] ( Control_Flow Class )               Initializing Control Flow Class.';
@@ -70,25 +89,26 @@ namespace iZiTA
             $is_configuration_loaded = ($this->Load_Configuration($Token_Database_Path) ?? False) ?: ($is_configuration_loaded = False);
             if(is_array($is_configuration_loaded) === True and empty($is_configuration_loaded) === False and isset($this->Control_Flow_Database) === False)
             {
-                $this->Control_Flow_Database = $is_configuration_loaded ?: exit;
+                $this->Control_Flow_Database = $is_configuration_loaded or exit;
                 if(isset($this->Control_Flow_Database) === True and $this->Control_Flow_Database === $is_configuration_loaded)
                 {
-                    $this->is_configuration_loaded = True ?: exit;
+                    $this->is_configuration_loaded = True or exit;
+                    self::$is_it_Constructed = True;
                     echo PHP_EOL.' [ I ] ( Control_Flow Class )               Control Flow Database was loaded successfully.';
                 }else
                 {
-                    echo PHP_EOL.' [ I ] ( Control_Flow Class )               Initializing Control Flow Class Failed. Error: Failed to load Control Flow Database rules. Exiting.';
+                    echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Error: Failed to save Control Flow Database rules. Exiting.';
                     exit;
                 }
             }else
             {
-                echo PHP_EOL.' [ I ] ( Control_Flow Class )               Initializing Control Flow Class Failed. Error: Failed loading Control Flow Database rules. Exiting.';
+                echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Error: Failed loading Control Flow Database rules. Exiting.';
                 exit;
             }
             unset($is_configuration_loaded);
         }
         /**
-         * Check if the Class is allowed.
+         * Check if the Class is allowed to run.
          * @param String $Execution_Token
          * @return bool Returns <b>True</b> if allowed to execute <b>False</b> otherwise.
          */
@@ -114,7 +134,7 @@ namespace iZiTA
                     {
                         if($Execution_File_Size === 2)
                         {
-                            echo PHP_EOL.' [ I ] ( Control_Flow Class )               Info: Execution file wrote through external sources.';
+                            echo PHP_EOL.' [ I ] ( is_Class_Allowed )                 Info: Execution file wrote through external sources.';
                         }
                         $read_execution_file = (file_get_contents($Execution_Token_File) ?? '') ?: '';
                         file_put_contents($Execution_Token_File, '',LOCK_EX);
@@ -127,22 +147,22 @@ namespace iZiTA
                                 return True;
                             }else
                             {
-                                echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Error: Verifying execution access failed. No execution data.';
+                                echo PHP_EOL.' [ I!CF ] ( is_Class_Allowed )              Error: Verifying execution access failed. No execution data.';
                             }
                         }else
                         {
-                            echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Error: Verifying execution access failed. Wrong data data.';
+                            echo PHP_EOL.' [ I!CF ] ( is_Class_Allowed )              Error: Verifying execution access failed. Wrong data data.';
                         }
                     }else
                     {
-                        echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Error: Verifying execution access failed. Wrong file size.';
+                        echo PHP_EOL.' [ I!CF ] ( is_Class_Allowed )              Error: Verifying execution access failed. Wrong file size.';
                     }
                 }elseif(file_exists($Execution_Token_File) === False)
                 {
-                    echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Error: Execution path is not provided.';
+                    echo PHP_EOL.' [ I!CF ] ( is_Class_Allowed )              Error: Execution path is not provided.';
                 }else
                 {
-                    echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Error: Execution path is malformed.';
+                    echo PHP_EOL.' [ I!CF ] ( is_Class_Allowed )              Error: Execution path is malformed.';
                 }
             }
             return False;
@@ -275,7 +295,7 @@ namespace iZiTA
             }
         }
         //</editor-fold>
-        //<editor-fold desc="Terminate">
+        //<editor-fold desc="Control_Flow::Terminate">
         Final Function __destruct()
         {
         }
@@ -299,6 +319,58 @@ namespace iZiTA
                     exit;
                 }
             }
+        //<editor-fold desc="Override Hooked Functions">
+        /**
+         * Prevent cloning
+         * @throws \Exception
+         */
+        Private Function __clone(): void {}
+        /**
+         * Prevent var_dump
+         * @throws \Exception
+         */
+        Final Public Static Function __set_state(array $data): self
+        {
+            Throw New \Exception("Exporting state is not allowed for Control_Flow.");
+        }
+        /**
+         *  Prevent Serialization.
+         * @throws \Exception
+         */
+        Final Public Function __sleep(): array
+        {
+            Throw New \Exception("Serialization is not allowed for Control_Flow.");
+        }
+        /**
+         *  Prevent Serialization.
+         * @throws \Exception
+         */
+        Final Public Function __serialize(): array
+        {
+            Throw New \Exception("Serialization is not allowed for Control_Flow.");
+        }
+        /**
+         *  Prevent Unserialization.
+         * @throws \Exception
+         */
+        Final Public Function __wakeup(): void
+        {
+            Throw New \Exception("Unserialization is not allowed for Control_Flow.");
+        }
+        /**
+         *  Prevent Unserialization.
+         * @throws \Exception
+         */
+        Final Public Function __unserialize(array $data): void
+        {
+            Throw New \Exception("Unserialization is not allowed for Control_Flow.");
+        }
+        //</editor-fold>
+        //</editor-fold>
+        //<editor-fold desc="Private Variables">
+        //<editor-fold desc="Private Class fail-safe indicators [v1]">
+        Private Static Bool $is_it_Constructed = False;
+        Private Static Bool $is_Construct_Tried = False;
         //</editor-fold>
         //<editor-fold desc="Private Hooked Class Objects [v4]">
         //<editor-fold desc="Private fail-safe indicators [v1]">
@@ -329,12 +401,6 @@ namespace iZiTA
                     }
                 }
             }
-        //</editor-fold>
-        //<editor-fold desc="Shared ReadOnly Structure Identifier Variables [v1]">
-        /**
-         * @var bool The value specifies if the database loaded successfully.
-         */
-        Final ReadOnly Bool $is_configuration_loaded;
         //</editor-fold>
         //<editor-fold desc="Private Structure Execution Controller Variables [v1]">
         Private Bool $Current_Script_Set = False;
@@ -1046,6 +1112,7 @@ namespace iZiTA
                 }
             }
         //</editor-fold>
+        //</editor-fold>
         //<editor-fold desc="Private Functions">
         //<editor-fold desc="Private Guard Functions">
         /**
@@ -1143,6 +1210,14 @@ namespace iZiTA
         {
             return (hash('sha3-256', rand(1000000,9999999).rand(1000000000,9999999999).rand(10000000000000,99999999999999).rand(1000000,9999999).rand(10000000000000,99999999999999).rand(1000000000,9999999999).rand(1000000,9999999)) ?: 'Error');
         }
+        //</editor-fold>
+        //<editor-fold desc="Shared Variables">
+        //<editor-fold desc="Shared ReadOnly Structure Identifier Variables [v1]">
+        /**
+         * @var bool Returned value specifies if the database loaded successfully.
+         */
+        Final ReadOnly Bool $is_configuration_loaded;
+        //</editor-fold>
         //</editor-fold>
         //<editor-fold desc="Shared Functions">
         //<editor-fold desc="Final Shared Getter Setter Functions">
@@ -1336,4 +1411,4 @@ namespace iZiTA
         //</editor-fold>
         //</editor-fold>
     }
-}
+}?>
