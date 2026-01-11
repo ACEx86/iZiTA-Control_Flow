@@ -71,7 +71,7 @@ namespace iZiTA
             }elseif(mb_detect_encoding($Token_Database_Path, 'UTF-8', true) === 'UTF-8' and mb_detect_encoding($Execution_Token, 'UTF-8', true) === 'UTF-8' and $this->is_Class_Allowed($Execution_Token) === True)
             {
                 echo PHP_EOL.' [ I ] ( Control_Flow Class )               Initializing Control Flow Class.';
-                (require_once 'Array_Lib.php') or exit;
+                (require_once 'Array_Library.php') or exit;
                 (require_once 'Logger.php') or exit;
                 (class_exists(\iZiTA\Array_Library::class, False) === True && enum_exists(\iZiTA\Array_Library::class, False) === False) ? (($this->Array_Library = new \iZiTA\Array_Library() ?? exit) ? (($this->is_Array_Library = True ?? exit) ?: exit) : exit) : exit;
                 (class_exists(\iZiTA\Logger::class, False) === True && enum_exists(\iZiTA\Logger::class, False) === False) ?: exit;
