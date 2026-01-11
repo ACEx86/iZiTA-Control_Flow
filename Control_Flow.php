@@ -12,7 +12,7 @@ namespace iZiTA
     //</editor-fold>
     date_default_timezone_set('UTC');
     defined('iZiTA>Control_Flow') or exit;
-    defined('iZiTA>Data') or define('iZiTA>Data', False) or exit;
+    defined('iZiTA>Array_Library') or define('iZiTA>Array_Library', False) or exit;
     //<editor-fold desc="Test Use Settings">
     error_reporting(error_level: E_ALL & ~E_NOTICE & ~E_WARNING);
     ini_set(option:'display_errors', value:'1');
@@ -71,9 +71,9 @@ namespace iZiTA
             }elseif(mb_detect_encoding($Token_Database_Path, 'UTF-8', true) === 'UTF-8' and mb_detect_encoding($Execution_Token, 'UTF-8', true) === 'UTF-8' and $this->is_Class_Allowed($Execution_Token) === True)
             {
                 echo PHP_EOL.' [ I ] ( Control_Flow Class )               Initializing Control Flow Class.';
-                (require_once 'Data.php') or exit;
+                (require_once 'Array_Lib.php') or exit;
                 (require_once 'Logger.php') or exit;
-                (class_exists(\iZiTA\Data::class, False) === True && enum_exists(\iZiTA\Data::class, False) === False) ? (($this->Data = new Data() ?? exit) ? (($this->is_Data = True ?? exit) ?: exit) : exit) : exit;
+                (class_exists(\iZiTA\Array_Library::class, False) === True && enum_exists(\iZiTA\Array_Library::class, False) === False) ? (($this->Array_Library = new \iZiTA\Array_Library() ?? exit) ? (($this->is_Array_Library = True ?? exit) ?: exit) : exit) : exit;
                 (class_exists(\iZiTA\Logger::class, False) === True && enum_exists(\iZiTA\Logger::class, False) === False) ?: exit;
                 $is_configuration_loaded = False;
                 $is_configuration_loaded = ($this->Load_Configuration($Token_Database_Path) ?? False) ?: ($is_configuration_loaded = False);
@@ -360,26 +360,26 @@ namespace iZiTA
         //</editor-fold>
         //<editor-fold desc="Private Hooked Class Objects [v4]">
         //<editor-fold desc="Private fail-safe indicators [v1]">
-        Private ReadOnly Bool $is_Data;
+        Private ReadOnly Bool $is_Array_Library;
         //</editor-fold>
         /**
          * @var Object
-         * This is the <b>iZiTA::Data</b> class object.<br>
+         * This is the <b>iZiTA::Array_Library</b> class object.<br>
          * It will be used to access the shared functions inside the class.
          */
-        Private Object $Data
+        Private Object $Array_Library
             {
                 get
                 {
-                    if(isset($this->Data) === True)
+                    if(isset($this->Array_Library) === True)
                     {
-                        return $this->Data;
+                        return $this->Array_Library;
                     }
                     return (Object)null;
                 }
-                set(Object $Data_Object)
+                set(Object $Array_Library_Object)
                 {
-                    if(isset($this->is_Data) === False and empty($this->Data) === True and isset($Data_Object) === True and ($Data_Object instanceof \iZiTA\Data) === True and $this->Data = $Data_Object)
+                    if(isset($this->is_Array_Library) === False and empty($this->Array_Library) === True and isset($Array_Library_Object) === True and ($Array_Library_Object instanceof \iZiTA\Array_Library) === True and $this->Array_Library = $Array_Library_Object)
                     {
                         $Data_Object = null;
                         unset($Data_Object);
@@ -445,7 +445,7 @@ namespace iZiTA
                                 {# The Shadow_Control_Flow_Database index in pos - 1 from this one should exist
                                     $Out_Of_Bounds = False;
                                     $Shadow_Control_Flow_Database = $this->Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access];
-                                    $Shadow_Control_Flow_Database = $this->Data->Array_Get_Last($Shadow_Control_Flow_Database) ?: $Shadow_Control_Flow_Database = '';
+                                    $Shadow_Control_Flow_Database = $this->Array_Library->Array_Get_Last($Shadow_Control_Flow_Database) ?: $Shadow_Control_Flow_Database = '';
                                     $Shadow_Last = count($Shadow_Control_Flow_Database)-1;
                                     if(strlen($Shadow_Control_Flow_Database[$Shadow_Last]) === 0)
                                     {
@@ -563,8 +563,8 @@ namespace iZiTA
                 {# Can find the location verify it and set.
                     if(empty($value) === False)
                     {
-                        $Set_Shadow_Control_Flow_Database = $this->Data->Array_To_String($value, '#');
-                        $Shadow_Control_Flow_Database = $this->Data->Array_To_String($this->Shadow_Control_Flow_Database, '#');
+                        $Set_Shadow_Control_Flow_Database = $this->Array_Library->Array_To_String($value, '#');
+                        $Shadow_Control_Flow_Database = $this->Array_Library->Array_To_String($this->Shadow_Control_Flow_Database, '#');
                         $Shadow_Previous_Array_Value = '0';
                         $Shadow_Previous_Array_Index = '0';
                         $Current_Script_Access = $this->Current_Script_Access;
@@ -757,7 +757,7 @@ namespace iZiTA
                             $Shadow_Corruption_Status = 0;
                             if(is_array($Shadow_Data) === True and empty($Shadow_Data) === False)
                             {
-                                $is_Shadow_Data = ($this->Data->Array_To_String($Shadow_Data, '#') ?? '');
+                                $is_Shadow_Data = ($this->Array_Library->Array_To_String($Shadow_Data, '#') ?? '');
                                 $z = 0;
                                 if(str_contains($is_Shadow_Data, '#') === True)
                                 {
