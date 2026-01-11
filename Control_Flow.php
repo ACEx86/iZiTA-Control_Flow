@@ -21,7 +21,7 @@ namespace iZiTA
     //</editor-fold>
     /**
      * iZiTA::Control_Flow<br>
-     * Script version: <b>202601.0.0.75</b><br>
+     * Script version: <b>202601.0.0.76</b><br>
      * PHP Version: <b>8.5</b><br>
      * <b>Info:</b><br>
      * iZiTA::Control Flow is a library to manage the scripts execution and variable reads/writes based on accesses, usage state and execution.<br>
@@ -444,31 +444,19 @@ namespace iZiTA
                                 if(isset($this->Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth - 1]) === True and isset($this->Shadow_Enroll_Guard[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth - 1]) === True and isset($this->Shadow_Enroll_Guard[$Script_Depth][$Current_Script_Access][$Sub_Script_Depth][$Shadow_Next_Array_Index][$Shadow_Next_Array_Key]) === False)
                                 {# The Shadow_Control_Flow_Database index in pos - 1 from this one should exist
                                     $Out_Of_Bounds = False;
-                                    if($Sub_Script_Depth - 2 > 0)
-                                    {# Scan the array to verify that tokes exist before enrolling next shadow array index
-                                        $Shadow_Control_Flow_Database = $this->Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access];
-                                        $Shadow_Control_Flow_Database = '#'.$this->Data->Array_To_String($Shadow_Control_Flow_Database, '#') ?: $Shadow_Control_Flow_Database = '';
-                                        $is_Token = 0;
-                                        $is_Depth = 0;
-                                        $Dagger = substr_count($Shadow_Control_Flow_Database, '#');
-                                        while(true)
+                                    $Shadow_Control_Flow_Database = $this->Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access];
+                                    $Shadow_Control_Flow_Database = $this->Data->Array_Get_Last($Shadow_Control_Flow_Database) ?: $Shadow_Control_Flow_Database = '';
+                                    $Shadow_Last = count($Shadow_Control_Flow_Database)-1;
+                                    if(strlen($Shadow_Control_Flow_Database[$Shadow_Last]) === 0)
+                                    {
+                                        $Shadow_Control_Flow_Database[$Shadow_Last] = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+                                    }
+                                    foreach($Shadow_Control_Flow_Database as $Check_Last)
+                                    {
+                                        if(is_string($Check_Last) === False or isset($Check_Last[63]) === False or isset($Check_Last[64]) === True)
                                         {
-                                            $is_Depth += 1;
-                                            if($is_Depth > $Sub_Script_Depth -1)
-                                            {
-                                                break;
-                                            }
-                                            $is_Token += 4;
-                                            if($is_Token > $Dagger)
-                                            {
-                                                echo PHP_EOL.' [ ! ] ( Shadow_Enroll_Guard )              Error: Script Depth Scanning out of bound access.';
-                                                break;
-                                            }
-                                            if(strlen(explode('#', $Shadow_Control_Flow_Database)[$is_Token]) !== 64)
-                                            {
-                                                $Out_Of_Bounds = True;
-                                                break;
-                                            }
+                                            $Out_Of_Bounds = True;
+                                            break;
                                         }
                                     }
                                     if($Out_Of_Bounds === False)
@@ -1068,7 +1056,7 @@ namespace iZiTA
                             if($Current_Script_Depth += 1 === $this->Script_Depth)
                             {
                                 $this->Current_Script_Access = $value;
-                                $this->Sub_Script_Depth = 0;# Set this first to fix enrol.
+                                $this->Sub_Script_Depth = 0;
                                 if($this->Sub_Script_Depth === 0)
                                 {
                                     echo PHP_EOL . ' [ + ] ( Current_Script_Access )            Current Script Access Set Done.';
@@ -1359,14 +1347,10 @@ namespace iZiTA
          */
         Final Function Get_Shadow_Control_Flow_Database(): array|Bool
         {
-            if(isset($this->Shadow_Control_Flow_Database) === True)
+            $Shadow_Control_Flow_Database = [];
+            if(isset($this->Shadow_Control_Flow_Database) === True and $Shadow_Control_Flow_Database = $this->Shadow_Control_Flow_Database and is_array($Shadow_Control_Flow_Database) === True and $Shadow_Control_Flow_Database === $this->Shadow_Control_Flow_Database)
             {
-                $Shadow_Control_Flow_Database = [];
-                $Shadow_Control_Flow_Database = ($this->Shadow_Control_Flow_Database ?? []) ?: ($Shadow_Control_Flow_Database = []);
-                if(is_array($Shadow_Control_Flow_Database) === True and $Shadow_Control_Flow_Database === $this->Shadow_Control_Flow_Database)
-                {
-                    return $Shadow_Control_Flow_Database;
-                }
+                return $Shadow_Control_Flow_Database;
             }
             return False;
         }
