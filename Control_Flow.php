@@ -21,7 +21,7 @@ namespace iZiTA
     //</editor-fold>
     /**
      * iZiTA::Control_Flow<br>
-     * Script version: <b>202601.0.0.76</b><br>
+     * Script version: <b>202601.0.0.77</b><br>
      * PHP Version: <b>8.5</b><br>
      * <b>Info:</b><br>
      * iZiTA::Control Flow is a library to manage the scripts execution and variable reads/writes based on accesses, usage state and execution.<br>
@@ -46,8 +46,8 @@ namespace iZiTA
         {
             if(self::$is_it_Constructed === False and self::$is_Construct_Tried === False and self::$is_Construct_Tried = True)
             {
-                $Constructor = new Control_Flow($Token_Database_Path, $Execution_Token);
-                if(self::$is_it_Constructed === True and isset($Constructor) === True and is_object($Constructor) === True and $Constructor instanceof Control_Flow)
+                $Constructor = False;
+                if($Constructor = new Control_Flow($Token_Database_Path, $Execution_Token) and self::$is_it_Constructed === True and isset($Constructor) === True and is_object($Constructor) === True and $Constructor instanceof \iZiTA\Control_Flow)
                 {
                     return $Constructor;
                 }
@@ -76,8 +76,7 @@ namespace iZiTA
                 (class_exists(\iZiTA\Array_Library::class, False) === True && enum_exists(\iZiTA\Array_Library::class, False) === False) ? (($this->Array_Library = new \iZiTA\Array_Library() ?? exit) ? (($this->is_Array_Library = True ?? exit) ?: exit) : exit) : exit;
                 (class_exists(\iZiTA\Logger::class, False) === True && enum_exists(\iZiTA\Logger::class, False) === False) ?: exit;
                 $is_configuration_loaded = False;
-                $is_configuration_loaded = ($this->Load_Configuration($Token_Database_Path) ?? False) ?: ($is_configuration_loaded = False);
-                if(is_array($is_configuration_loaded) === True and empty($is_configuration_loaded) === False and isset($this->Control_Flow_Database) === False and $this->Control_Flow_Database = $is_configuration_loaded and isset($this->Control_Flow_Database) === True)
+                if($is_configuration_loaded = ($this->Load_Configuration($Token_Database_Path) ?? False) and is_array($is_configuration_loaded) === True and empty($is_configuration_loaded) === False and isset($this->Control_Flow_Database) === False and $this->Control_Flow_Database = $is_configuration_loaded and isset($this->Control_Flow_Database) === True)
                 {
                     if($this->Control_Flow_Database === $is_configuration_loaded and $this->is_configuration_loaded = True and self::$is_it_Constructed = True)
                     {
@@ -379,7 +378,7 @@ namespace iZiTA
                 }
                 set(Object $Array_Library_Object)
                 {
-                    if(isset($this->is_Array_Library) === False and empty($this->Array_Library) === True and isset($Array_Library_Object) === True and ($Array_Library_Object instanceof \iZiTA\Array_Library) === True and $this->Array_Library = $Array_Library_Object)
+                    if(isset($this->is_Array_Library) === False and isset($this->Array_Library) === False and isset($Array_Library_Object) === True and $Array_Library_Object instanceof \iZiTA\Array_Library and $this->Array_Library = $Array_Library_Object and isset($this->Array_Library) === True)
                     {
                         $Data_Object = null;
                         unset($Data_Object);
@@ -757,18 +756,12 @@ namespace iZiTA
                             $Shadow_Corruption_Status = 0;
                             if(is_array($Shadow_Data) === True and empty($Shadow_Data) === False)
                             {
-                                $is_Shadow_Data = ($this->Array_Library->Array_To_String($Shadow_Data, '#') ?? '');
-                                $z = 0;
-                                if(str_contains($is_Shadow_Data, '#') === True)
-                                {
-                                    $Enrol_Next_Depth = True;
-                                    $z = substr_count($is_Shadow_Data,'#');
-                                    $is_Shadow_Data = explode('#', $is_Shadow_Data);
-                                }
-                                for($x = 5; $x <= $z; $x += 6)
+                                $is_Shadow_Data = ($this->Array_Library->Array_Get_Last($Shadow_Data) ?? '');
+                                $Enrol_Next_Depth = True;
+                                foreach($is_Shadow_Data as $Check_Last)
                                 {# Scan and verify all the previous Shadow_Control_Flow_Database.
-                                    $Shadow_Corruption_Status++;
-                                    if(isset($is_Shadow_Data[$x]) === False or is_string($is_Shadow_Data[$x]) === False or isset(($is_Shadow_Data[$x])[63]) === False)
+                                    $Shadow_Corruption_Status += 1;
+                                    if(is_string($Check_Last) === False or isset($Check_Last[63]) === False or isset($Check_Last[64]) === True)
                                     {
                                         $Enrol_Next_Depth = False;
                                         break;
@@ -793,11 +786,11 @@ namespace iZiTA
                             }
                         }else
                         {
-                            echo PHP_EOL.' [ ! ] ( Script_Depth )                     Script depth can\'t be changed. Depth: '.$is_depth.'->'.$is_Sub_Script_Depth;
+                            echo PHP_EOL.' [ ! ] ( Script_Depth )                     Script depth can not be changed. Depth: '.$is_depth.'->'.$is_Sub_Script_Depth;
                         }
                     }else
                     {
-                        echo PHP_EOL.' [ ! ] ( Script_Depth )                     Script depth can\'t be changed. Depth: '.$is_depth;
+                        echo PHP_EOL.' [ ! ] ( Script_Depth )                     Script depth can not be changed. Depth: '.$is_depth;
                     }
                 }
             }
@@ -1017,43 +1010,32 @@ namespace iZiTA
                 }
             }
         /**
-         * @var string Is the current script action that the script performs.<br>
+         * @var string Is the current script action that the script performs.
          */
         Private String $Current_Script_Access = 'NO_ACCESS'
             {
                 get
                 {
                     $trampoline = $this->Current_Script_Access;
-                    if(str_contains($trampoline, ':') === True and substr_count($trampoline, ':') === 1 and isset(explode(':', $trampoline)[1]) === True and strlen($trampoline) < 75)
+                    $New_Script_Depth = (explode(':', $trampoline)[0] ?? $New_Script_Depth = $trampoline) ?: $New_Script_Depth = $trampoline;
+                    $Sub_Script_Depth = (explode(':', $trampoline)[1] ?? '0') ?: '0';
+                    if($Sub_Script_Depth < 99999999)
                     {
-                        $Sub_Script_Depth = explode(':', $trampoline)[1];
-                        if($Sub_Script_Depth < 99999999)
-                        {
-                            $Sub_Script_Depth = (int)$Sub_Script_Depth + 1;
-                        }
-                        $New_Script_Depth = explode(':', $trampoline)[0].':'.$Sub_Script_Depth;
-                        if(!($trampoline === $New_Script_Depth) === True)
-                        {
-                            $this->Current_Script_Access = $New_Script_Depth;
-                            return explode(':', $trampoline)[0];
-                        }
-                    }else
-                    {
-                        $this->Current_Script_Access = $trampoline.':1';
-                        return $trampoline;
+                        $Sub_Script_Depth = (int)$Sub_Script_Depth + 1;
                     }
-                    return $this->Current_Script_Access.':X';
+                    $this->Current_Script_Access = $New_Script_Depth.':'.$Sub_Script_Depth;
+                    return $New_Script_Depth;
                 }
                 set(String $value)
                 {
-                    if(str_contains($value, ':') === False)
+                    if(str_contains($value, ':') === False or $value != 'NO_ACCESS')
                     {# Value can't contain special character.
                         $Current_Script_Access = (explode(':', $this->Current_Script_Access)[0] ?? '') ?: ($Current_Script_Access = $this->Current_Script_Access);
                         if(isset($this->Control_Flow_Database[$this->Script_Depth + 1][$value][0]) === True and isset($this->Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$this->Sub_Script_Depth + 1]) === False and isset($this->Shadow_Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$this->Sub_Script_Depth]) === True)
                         {# If special value found then proceed with updating status check. Do not change value if Control Flow Database is not at the end.
                             $Current_Script_Depth = $this->Script_Depth;
                             $this->Script_Depth += 1;
-                            if($Current_Script_Depth += 1 === $this->Script_Depth)
+                            if(($Current_Script_Depth += 1) === $this->Script_Depth)
                             {
                                 $this->Current_Script_Access = $value;
                                 $this->Sub_Script_Depth = 0;
