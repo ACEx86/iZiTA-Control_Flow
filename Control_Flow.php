@@ -21,7 +21,7 @@ namespace iZiTA
     //</editor-fold>
     /**
      * iZiTA::Control_Flow<br>
-     * Script version: <b>202601.0.0.77</b><br>
+     * Script version: <b>202601.0.0.78</b><br>
      * PHP Version: <b>8.5</b><br>
      * <b>Info:</b><br>
      * iZiTA::Control Flow is a library to manage the scripts execution and variable reads/writes based on accesses, usage state and execution.<br>
@@ -756,13 +756,11 @@ namespace iZiTA
                         if(isset($Current_Script_Access) === True and is_string($Current_Script_Access) === True and isset($is_Sub_Script_Depth) === True and is_integer($is_Sub_Script_Depth) === True and isset($this->Control_Flow_Database[$is_depth]) === True and isset($this->Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth]) === True and isset($this->Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth + 1]) === False and isset($this->Shadow_Control_Flow_Database[$is_depth]) === False and isset($this->Shadow_Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth]) === True and isset($this->Shadow_Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth + 1]) === False)
                         {# Checks before adding: next depth exist, if no next place exist, is at last depth.
                             $Shadow_Data = ($this->Shadow_Control_Flow_Database ?? 'FAIL');
-                            print_r($Shadow_Data);
                             $Enrol_Next_Depth = False;
                             $Shadow_Corruption_Status = 0;
                             if(is_array($Shadow_Data) === True and empty($Shadow_Data) === False)
                             {
                                 $is_Shadow_Data = ($this->Array_Library->Array_Get_Last($Shadow_Data) ?? '');
-                                print_r($is_Shadow_Data);
                                 $Enrol_Next_Depth = True;
                                 foreach($is_Shadow_Data as $Check_Last)
                                 {# Scan and verify all the previous Shadow_Control_Flow_Database.
