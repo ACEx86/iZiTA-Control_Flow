@@ -121,7 +121,7 @@ namespace iZiTA
                 if(file_exists($Execution_Token_File) === True and filetype($Execution_Token_File) === 'file' and isset($Execution_Token_File[156]) === True)
                 {
                     $Execution_File_Size = (filesize($Execution_Token_File) ?? 0) ?: 0;
-                    if($Execution_File_Size === 2 or $Execution_File_Size === 1)
+                    if($Execution_File_Size === 1 or $Execution_File_Size === 2)
                     {
                         if($Execution_File_Size === 2)
                         {
@@ -445,7 +445,11 @@ namespace iZiTA
                                     $Out_Of_Bounds = False;
                                     $Shadow_Control_Flow_Database = $this->Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access];
                                     $Shadow_Control_Flow_Database = $this->Array_Library->Array_Get_Last($Shadow_Control_Flow_Database) ?: $Shadow_Control_Flow_Database = '';
-                                    $Shadow_Last = count($Shadow_Control_Flow_Database)-1;
+                                    $Shadow_Last = 0;
+                                    if(is_array($Shadow_Control_Flow_Database) === True)
+                                    {
+                                        $Shadow_Last = count($Shadow_Control_Flow_Database)-1;
+                                    }
                                     if(strlen($Shadow_Control_Flow_Database[$Shadow_Last]) === 0)
                                     {
                                         $Shadow_Control_Flow_Database[$Shadow_Last] = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
@@ -752,11 +756,13 @@ namespace iZiTA
                         if(isset($Current_Script_Access) === True and is_string($Current_Script_Access) === True and isset($is_Sub_Script_Depth) === True and is_integer($is_Sub_Script_Depth) === True and isset($this->Control_Flow_Database[$is_depth]) === True and isset($this->Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth]) === True and isset($this->Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth + 1]) === False and isset($this->Shadow_Control_Flow_Database[$is_depth]) === False and isset($this->Shadow_Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth]) === True and isset($this->Shadow_Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$is_Sub_Script_Depth + 1]) === False)
                         {# Checks before adding: next depth exist, if no next place exist, is at last depth.
                             $Shadow_Data = ($this->Shadow_Control_Flow_Database ?? 'FAIL');
+                            print_r($Shadow_Data);
                             $Enrol_Next_Depth = False;
                             $Shadow_Corruption_Status = 0;
                             if(is_array($Shadow_Data) === True and empty($Shadow_Data) === False)
                             {
                                 $is_Shadow_Data = ($this->Array_Library->Array_Get_Last($Shadow_Data) ?? '');
+                                print_r($is_Shadow_Data);
                                 $Enrol_Next_Depth = True;
                                 foreach($is_Shadow_Data as $Check_Last)
                                 {# Scan and verify all the previous Shadow_Control_Flow_Database.
