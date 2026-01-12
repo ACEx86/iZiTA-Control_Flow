@@ -444,13 +444,13 @@ namespace iZiTA
                                 {# The Shadow_Control_Flow_Database index in pos - 1 from this one should exist
                                     $Out_Of_Bounds = False;
                                     $Shadow_Control_Flow_Database = $this->Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access];
-                                    $Shadow_Control_Flow_Database = $this->Array_Library->Array_Get_Last($Shadow_Control_Flow_Database, 3);
+                                    $Shadow_Control_Flow_Database = ($this->Array_Library->Array_Get_Last($Shadow_Control_Flow_Database, 3) ?? ['AA']);
                                     $Shadow_Last = 0;
                                     if(is_array($Shadow_Control_Flow_Database) === True)
                                     {
                                         $Shadow_Last = count($Shadow_Control_Flow_Database)-1;
                                     }
-                                    if(empty($Shadow_Control_Flow_Database[$Shadow_Last]) === True)
+                                    if(isset($Shadow_Control_Flow_Database[$Shadow_Last]) === True and empty($Shadow_Control_Flow_Database[$Shadow_Last]) === True)
                                     {
                                         $Shadow_Control_Flow_Database[$Shadow_Last] = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
                                     }
@@ -767,7 +767,6 @@ namespace iZiTA
                             if(is_array($Shadow_Data) === True and empty($Shadow_Data) === False)
                             {
                                 $is_Shadow_Data = ($this->Array_Library->Array_Get_Last($Shadow_Data) ?? '');
-                                print_r($is_Shadow_Data);
                                 $Enrol_Next_Depth = True;
                                 foreach($is_Shadow_Data as $Check_Last)
                                 {# Scan and verify all the previous Shadow_Control_Flow_Database.
