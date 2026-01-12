@@ -21,7 +21,7 @@ namespace iZiTA
     //</editor-fold>
     /**
      * iZiTA::Control_Flow<br>
-     * Script version: <b>202601.0.0.78</b><br>
+     * Script version: <b>202601.0.0.79</b><br>
      * PHP Version: <b>8.5</b><br>
      * <b>Info:</b><br>
      * iZiTA::Control Flow is a library to manage the scripts execution and variable reads/writes based on accesses, usage state and execution.<br>
@@ -444,22 +444,28 @@ namespace iZiTA
                                 {# The Shadow_Control_Flow_Database index in pos - 1 from this one should exist
                                     $Out_Of_Bounds = False;
                                     $Shadow_Control_Flow_Database = $this->Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access];
-                                    $Shadow_Control_Flow_Database = $this->Array_Library->Array_Get_Last($Shadow_Control_Flow_Database) ?: $Shadow_Control_Flow_Database = '';
+                                    $Shadow_Control_Flow_Database = $this->Array_Library->Array_Get_Last($Shadow_Control_Flow_Database, 3);
                                     $Shadow_Last = 0;
                                     if(is_array($Shadow_Control_Flow_Database) === True)
                                     {
                                         $Shadow_Last = count($Shadow_Control_Flow_Database)-1;
                                     }
-                                    if(strlen($Shadow_Control_Flow_Database[$Shadow_Last]) === 0)
+                                    if(empty($Shadow_Control_Flow_Database[$Shadow_Last]) === True)
                                     {
                                         $Shadow_Control_Flow_Database[$Shadow_Last] = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
                                     }
-                                    foreach($Shadow_Control_Flow_Database as $Check_Last)
+                                    if($Sub_Script_Depth !== ($Shadow_Last+1))
                                     {
-                                        if(is_string($Check_Last) === False or isset($Check_Last[63]) === False or isset($Check_Last[64]) === True)
+                                        $Out_Of_Bounds = True;
+                                    }else
+                                    {
+                                        foreach($Shadow_Control_Flow_Database as $is_Valid)
                                         {
-                                            $Out_Of_Bounds = True;
-                                            break;
+                                            if(is_string($is_Valid) === False or isset($is_Valid[63]) === False or isset($is_Valid[64]) === True)
+                                            {
+                                                $Out_Of_Bounds = True;
+                                                break;
+                                            }
                                         }
                                     }
                                     if($Out_Of_Bounds === False)
@@ -761,6 +767,7 @@ namespace iZiTA
                             if(is_array($Shadow_Data) === True and empty($Shadow_Data) === False)
                             {
                                 $is_Shadow_Data = ($this->Array_Library->Array_Get_Last($Shadow_Data) ?? '');
+                                print_r($is_Shadow_Data);
                                 $Enrol_Next_Depth = True;
                                 foreach($is_Shadow_Data as $Check_Last)
                                 {# Scan and verify all the previous Shadow_Control_Flow_Database.
