@@ -21,7 +21,7 @@ namespace iZiTA
     //</editor-fold>
     /**
      * iZiTA::Control_Flow<br>
-     * Script version: <b>202601.0.0.79</b><br>
+     * Script version: <b>202601.0.0.80</b><br>
      * PHP Version: <b>8.5</b><br>
      * <b>Info:</b><br>
      * iZiTA::Control Flow is a library to manage the scripts execution and variable reads/writes based on accesses, usage state and execution.<br>
@@ -766,12 +766,12 @@ namespace iZiTA
                             $Shadow_Corruption_Status = 0;
                             if(is_array($Shadow_Data) === True and empty($Shadow_Data) === False)
                             {
-                                $is_Shadow_Data = ($this->Array_Library->Array_Get_Last($Shadow_Data) ?? '');
+                                $is_Shadow_Data = ($this->Array_Library->Array_Get_Last($Shadow_Data) ?? ['']);
                                 $Enrol_Next_Depth = True;
                                 foreach($is_Shadow_Data as $Check_Last)
                                 {# Scan and verify all the previous Shadow_Control_Flow_Database.
                                     $Shadow_Corruption_Status += 1;
-                                    if(is_string($Check_Last) === False or isset($Check_Last[63]) === False or isset($Check_Last[64]) === True)
+                                    if(is_string($Check_Last) === False or empty($Check_Last) or isset($Check_Last[63]) === False or isset($Check_Last[64]) === True)
                                     {
                                         $Enrol_Next_Depth = False;
                                         break;
@@ -796,11 +796,11 @@ namespace iZiTA
                             }
                         }else
                         {
-                            echo PHP_EOL.' [ ! ] ( Script_Depth )                     Script depth can not be changed. Depth: '.$is_depth.'->'.$is_Sub_Script_Depth;
+                            echo PHP_EOL.' [ ! ] ( Script_Depth )                     Script depth can not be changed. Depth: '.$is_depth.' Sub: '.$is_Sub_Script_Depth;
                         }
                     }else
                     {
-                        echo PHP_EOL.' [ ! ] ( Script_Depth )                     Script depth can not be changed. Depth: '.$is_depth;
+                        echo PHP_EOL.' [ ! ] ( Script_Depth )                     Script depth can not be changed from: '.$is_depth.' to: '.$Set_SD;
                     }
                 }
             }
@@ -1020,7 +1020,7 @@ namespace iZiTA
                 }
             }
         /**
-         * @var string Is the current script action that the script performs.
+         * @var string Is the current action that the script performs.
          */
         Private String $Current_Script_Access = 'NO_ACCESS'
             {
@@ -1351,7 +1351,7 @@ namespace iZiTA
          */
         Final Function Get_Script_Depth(): Int|Bool
         {
-                return ($this->Script_Depth ?? False);
+            return ($this->Script_Depth ?? False);
         }
         //</editor-fold>
         //<editor-fold desc="Final Shared Functions">
