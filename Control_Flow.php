@@ -3,6 +3,8 @@
  * Open Source GPLv3
  */
 declare(strict_types=1);
+declare(encoding='UTF-8');
+declare(ticks=1);
 namespace iZiTA
 {
     //<editor-fold desc="Initialization Process">
@@ -21,12 +23,12 @@ namespace iZiTA
     //</editor-fold>
     /**
      * iZiTA::Control_Flow<br>
-     * Script version: <b>202601.0.0.80</b><br>
+     * Script version: <b>202601.0.0.82</b><br>
      * PHP Version: <b>8.5</b><br>
      * <b>Info:</b><br>
      * iZiTA::Control Flow is a library to manage the scripts execution and variable reads/writes based on accesses, usage state and execution.<br>
      * <b>Details:</b><br>
-     * Call: Control_Flow::Construct('Rules Path' 'Execution Token') to initialize.<br>
+     * Call: Control_Flow::Construct('Rules Path', 'Execution Token') to initialize.<br>
      * iZiTA::Control Flow can manage access to hooked variable read/writes and execution of a script, based on the execution of the script from a list of token of executions that are allowed. A list of allowed actions to be performed.
      * @package iZiTA::Control_Flow
      * @author : TheTimeAuthority
@@ -118,26 +120,26 @@ namespace iZiTA
                 $Day_Month_Year = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
                 unset($Execution_Token);
                 unset($Day_Month_Year);
-                if(file_exists($Execution_Token_File) === True and filetype($Execution_Token_File) === 'file' and isset($Execution_Token_File[156]) === True)
+                if(isset($Execution_Token_File[156]) === True and isset($Execution_Token_File[157]) === False and file_exists($Execution_Token_File) === True and filetype($Execution_Token_File) === 'file')
                 {
                     $Execution_File_Size = (filesize($Execution_Token_File) ?? 0) ?: 0;
                     if($Execution_File_Size === 1 or $Execution_File_Size === 2)
                     {
                         if($Execution_File_Size === 2)
                         {
-                            echo PHP_EOL.' [ I ] ( is_Class_Allowed )                 Info: Execution file wrote through external sources.';
+                            echo PHP_EOL.' [ I ] ( is_Class_Allowed )                 Info: Execution file written through external sources.';
                         }
                         unset($Execution_File_Size);
                         $read_execution_file = (file_get_contents($Execution_Token_File) ?? '') ?: '';
-                        file_put_contents($Execution_Token_File, '',LOCK_EX);
-                        unlink($Execution_Token_File);
-                        $Execution_Token_File = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-                        unset($Execution_Token_File);
                         if(mb_detect_encoding($read_execution_file, 'UTF-8', true) === 'UTF-8')
                         {
                             $read_execution_file = (preg_replace("/[^2]/", '', $read_execution_file) ?? '') ?: '';
                             if($read_execution_file === '2')
                             {
+                                file_put_contents($Execution_Token_File, '',LOCK_EX);
+                                unlink($Execution_Token_File);
+                                $Execution_Token_File = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+                                unset($Execution_Token_File);
                                 return True;
                             }else
                             {
@@ -145,13 +147,13 @@ namespace iZiTA
                             }
                         }else
                         {
-                            echo PHP_EOL.' [ I!CF ] ( is_Class_Allowed )              Error: Verifying execution access failed. Wrong data data.';
+                            echo PHP_EOL.' [ I!CF ] ( is_Class_Allowed )              Error: Verifying execution access failed. Wrong data format.';
                         }
                     }else
                     {
                         echo PHP_EOL.' [ I!CF ] ( is_Class_Allowed )              Error: Verifying execution access failed. Wrong file size.';
                     }
-                }elseif(file_exists($Execution_Token_File) === False)
+                }elseif(isset($Execution_Token_File[156]) === True and isset($Execution_Token_File[157]) === False and file_exists($Execution_Token_File) === False)
                 {
                     echo PHP_EOL.' [ I!CF ] ( is_Class_Allowed )              Error: Execution path is not provided.';
                 }else
@@ -164,7 +166,7 @@ namespace iZiTA
         /**
          * Loads the configuration file to be used for the Control_Flow of the Class.
          * @param String $Token_Database_Path Is the path to load the configuration from.
-         * @return array | Bool Returns the database in array format False otherwise.
+         * @return array | Bool Returns the <b>database</b> as an array <b>False</b> otherwise.
          */
         Private Function Load_Configuration(String $Token_Database_Path = ''): array|Bool
         {
@@ -353,7 +355,7 @@ namespace iZiTA
         //</editor-fold>
         //</editor-fold>
         //<editor-fold desc="Private Variables">
-        //<editor-fold desc="Private Class fail-safe indicators [v1]">
+        //<editor-fold desc="Private Static Class fail-safe indicators [v1]">
         Private Static Bool $is_Construct_Tried = False;
         Private Static Bool $is_it_Constructed = False;
         //</editor-fold>
@@ -380,8 +382,8 @@ namespace iZiTA
                 {
                     if(isset($this->is_Array_Library) === False and isset($this->Array_Library) === False and isset($Array_Library_Object) === True and $Array_Library_Object instanceof \iZiTA\Array_Library and $this->Array_Library = $Array_Library_Object and isset($this->Array_Library) === True)
                     {
-                        $Data_Object = null;
-                        unset($Data_Object);
+                        $Array_Library_Object = null;
+                        unset($Array_Library_Object);
                     }
                 }
             }
@@ -959,7 +961,7 @@ namespace iZiTA
                                     $this->Shadow_Control_Flow_Database = $Shadow_Clone;
                                     if($this->Shadow_Control_Flow_Database !== $Shadow_Clone)
                                     {
-                                        echo PHP_EOL.' [ ! ] ( Execution_Token )                  Critical: Failed to set the token on the shadow control flow database.';
+                                        echo PHP_EOL.' [ !! ] ( Execution_Token )                 Critical: Failed to set the token on the shadow control flow database.';
                                     }
                                 }else
                                 {
@@ -1351,7 +1353,7 @@ namespace iZiTA
          */
         Final Function Get_Script_Depth(): Int|Bool
         {
-            return ($this->Script_Depth ?? False);
+                return ($this->Script_Depth ?? False);
         }
         //</editor-fold>
         //<editor-fold desc="Final Shared Functions">
