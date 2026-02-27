@@ -75,7 +75,7 @@ namespace iZiTA
                 echo PHP_EOL.' [ I ] ( Control_Flow Class )               Initializing Control Flow Class.';
                 (require_once 'Array_Library.php') or exit;
                 (require_once 'Logger.php') or exit;
-                if(class_exists(\iZiTA\Array_Library::class, False) === True and enum_exists(\iZiTA\Array_Library::class, False) === False and $this->Array_Library = new \iZiTA\Array_Library and isset($this->Array_Library) === True and $this->Array_Library instanceof \iZiTA\Array_Library and isset($this->is_Array_Library) === False and $this->is_Array_Library = True and isset($this->is_Array_Library) === True and $this->is_Array_Library === True)
+                if(class_exists(\iZiTA\Array_Library::class, False) === True and enum_exists(\iZiTA\Array_Library::class, False) === False and isset($this->Array_Library) === False and $this->Array_Library = new \iZiTA\Array_Library and isset($this->Array_Library) === True and $this->Array_Library instanceof \iZiTA\Array_Library and isset($this->is_Array_Library) === False and $this->is_Array_Library = True and isset($this->is_Array_Library) === True and $this->is_Array_Library === True)
                 {
                     echo PHP_EOL.' [ I ] ( Control_Flow Class )               Control Flow loaded Array_Library.';
                 }else
@@ -368,7 +368,7 @@ namespace iZiTA
          * This is the <b>iZiTA::Array_Library</b> class object.<br>
          * It will be used to access the shared functions inside the class.
          */
-        Private Object $Array_Library
+        Private ?Object $Array_Library
             {
                 get
                 {
@@ -376,15 +376,20 @@ namespace iZiTA
                     {
                         return $this->Array_Library;
                     }
-                    return (Object)null;
+                    return null;
                 }
-                set(Object $Array_Library_Object)
+                set(?Object $Array_Library_Object)
                 {
-                    if(isset($this->is_Array_Library) === False and isset($this->Array_Library) === False and isset($Array_Library_Object) === True and $Array_Library_Object instanceof \iZiTA\Array_Library and $this->Array_Library = $Array_Library_Object and isset($this->Array_Library) === True and $this->Array_Library instanceof \iZiTA\Array_Library)
+                    if(isset($this->is_Array_Library) === False and isset($this->Array_Library) === False and isset($Array_Library_Object) === True and $Array_Library_Object instanceof \iZiTA\Array_Library)
                     {
-                        $Array_Library_Object = null;
-                        unset($Array_Library_Object);
+                        if($this->Array_Library = $Array_Library_Object and isset($this->Array_Library) === True and $this->Array_Library instanceof \iZiTA\Array_Library)
+                        {}else
+                        {
+                            $this->Array_Library = null;
+                        }
                     }
+                    $Array_Library_Object = null;
+                    unset($Array_Library_Object);
                 }
             }
         //</editor-fold>
