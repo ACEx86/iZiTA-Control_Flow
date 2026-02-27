@@ -10,7 +10,7 @@ namespace iZiTA
     //<editor-fold desc="Initialization Process">
     //<editor-fold desc="Check Startup">
     $included_files = False;
-    ((__FILE__ ?? $included_files = True) === (get_included_files()[0] ?? $included_files = True ?: $included_files = True)) ? True : ($included_files === False ? False : True) and exit;
+    ((__FILE__ ?? $included_files = True ?: $included_files = True) === (get_included_files()[0] ?? $included_files = True ?: $included_files = True)) ? True : ($included_files === False ? False : True) and exit;
     //</editor-fold>
     date_default_timezone_set('UTC');
     defined('iZiTA>Control_Flow') or exit;
@@ -23,7 +23,7 @@ namespace iZiTA
     //</editor-fold>
     /**
      * iZiTA::Control_Flow<br>
-     * Script version: <b>202602.0.0.89</b><br>
+     * Script version: <b>202602.0.0.90</b><br>
      * PHP Version: <b>8.5</b><br>
      * <b>Info:</b><br>
      * iZiTA::Control Flow is a library to manage execution and variable reads/writes based on accesses, usage state and execution.<br>
@@ -46,7 +46,7 @@ namespace iZiTA
          */
         Final Static Function Construct(String $Token_Database_Path = '', String $Execution_Token = ''): Control_Flow|Bool
         {
-            if(self::$is_Construct_Tried === False and self::$is_Construct_Tried = True and self::$is_it_Constructed === False)
+            if(self::$is_it_Constructed === False and self::$is_Construct_Tried === False and self::$is_Construct_Tried = True)
             {
                 $Constructor = False;
                 if($Constructor = new Control_Flow($Token_Database_Path, $Execution_Token) and self::$is_it_Constructed === True and isset($Constructor) === True and is_object($Constructor) === True and $Constructor instanceof \iZiTA\Control_Flow)
@@ -75,7 +75,7 @@ namespace iZiTA
                 echo PHP_EOL.' [ I ] ( Control_Flow Class )               Initializing Control Flow Class.';
                 (require_once 'Array_Library.php') or exit;
                 (require_once 'Logger.php') or exit;
-                if(class_exists(\iZiTA\Array_Library::class, False) === True and enum_exists(\iZiTA\Array_Library::class, False) === False and isset($this->Array_Library) === False and $this->Array_Library = new \iZiTA\Array_Library() and isset($this->Array_Library) === True and $this->Array_Library instanceof \iZiTA\Array_Library and isset($this->is_Array_Library) === False and $this->is_Array_Library = True and isset($this->is_Array_Library) === True and $this->is_Array_Library === True)
+                if(class_exists(\iZiTA\Array_Library::class, False) === True and enum_exists(\iZiTA\Array_Library::class, False) === False and $this->Array_Library = new \iZiTA\Array_Library and isset($this->Array_Library) === True and $this->Array_Library instanceof \iZiTA\Array_Library and isset($this->is_Array_Library) === False and $this->is_Array_Library = True and isset($this->is_Array_Library) === True and $this->is_Array_Library === True)
                 {
                     echo PHP_EOL.' [ I ] ( Control_Flow Class )               Control Flow loaded Array_Library.';
                 }else
@@ -380,7 +380,7 @@ namespace iZiTA
                 }
                 set(Object $Array_Library_Object)
                 {
-                    if(isset($this->is_Array_Library) === False and isset($this->Array_Library) === False and isset($Array_Library_Object) === True and $Array_Library_Object instanceof \iZiTA\Array_Library and $this->Array_Library = $Array_Library_Object and isset($this->Array_Library) === True)
+                    if(isset($this->is_Array_Library) === False and isset($this->Array_Library) === False and isset($Array_Library_Object) === True and $Array_Library_Object instanceof \iZiTA\Array_Library and $this->Array_Library = $Array_Library_Object and isset($this->Array_Library) === True and $this->Array_Library instanceof \iZiTA\Array_Library)
                     {
                         $Array_Library_Object = null;
                         unset($Array_Library_Object);
