@@ -3,14 +3,14 @@
  * Open Source GPLv3
  */
 declare(strict_types=1);
-declare(encoding='UTF-8');
+//declare(encoding='UTF-8');
 declare(ticks=1);
 namespace iZiTA
 {
     //<editor-fold desc="Initialization Process">
     //<editor-fold desc="Check Startup">
     $included_files = False;
-    ((__FILE__ ?? $included_files = True) === (get_included_files()[0] ?? $included_files = True)) ? True : ($included_files === False ? False : True) and exit;
+    ((__FILE__ ?? $included_files = True) === (get_included_files()[0] ?? $included_files = True ?: $included_files = True)) ? True : ($included_files === False ? False : True) and exit;
     //</editor-fold>
     date_default_timezone_set('UTC');
     defined('iZiTA>Control_Flow') or exit;
@@ -23,10 +23,10 @@ namespace iZiTA
     //</editor-fold>
     /**
      * iZiTA::Control_Flow<br>
-     * Script version: <b>202601.0.0.82</b><br>
+     * Script version: <b>202602.0.0.89</b><br>
      * PHP Version: <b>8.5</b><br>
      * <b>Info:</b><br>
-     * iZiTA::Control Flow is a library to manage the scripts execution and variable reads/writes based on accesses, usage state and execution.<br>
+     * iZiTA::Control Flow is a library to manage execution and variable reads/writes based on accesses, usage state and execution.<br>
      * <b>Details:</b><br>
      * Call: Control_Flow::Construct('Rules Path', 'Execution Token') to initialize.<br>
      * iZiTA::Control Flow can manage access to hooked variable read/writes and execution of a script, based on the execution of the script from a list of token of executions that are allowed. A list of allowed actions to be performed.
@@ -42,11 +42,11 @@ namespace iZiTA
          * If a file is not provided the script will exit.
          * @param String $Execution_Token is the Token that allow the class to load.<br>
          * If the Token is not correct the script will exit.
-         * @return Object|Bool Returns <b>Control Flow Object</b> or <b>False</b> on failure.
+         * @return Control_Flow|Bool Returns <b>Control_Flow::class Object</b> or <b>False</b> on failure.
          */
-        Final Static Function Construct(String $Token_Database_Path = '', String $Execution_Token = ''): Object|Bool
+        Final Static Function Construct(String $Token_Database_Path = '', String $Execution_Token = ''): Control_Flow|Bool
         {
-            if(self::$is_it_Constructed === False and self::$is_Construct_Tried === False and self::$is_Construct_Tried = True)
+            if(self::$is_Construct_Tried === False and self::$is_Construct_Tried = True and self::$is_it_Constructed === False)
             {
                 $Constructor = False;
                 if($Constructor = new Control_Flow($Token_Database_Path, $Execution_Token) and self::$is_it_Constructed === True and isset($Constructor) === True and is_object($Constructor) === True and $Constructor instanceof \iZiTA\Control_Flow)
@@ -70,13 +70,20 @@ namespace iZiTA
             {
                 echo PHP_EOL.' [ I! ] ( Control_Flow Class )              Initialization failed. Empty execution token.';
                 exit;
-            }elseif(mb_detect_encoding($Token_Database_Path, 'UTF-8', true) === 'UTF-8' and mb_detect_encoding($Execution_Token, 'UTF-8', true) === 'UTF-8' and $this->is_Class_Allowed($Execution_Token) === True)
+            }elseif(isset($this->is_configuration_loaded) === False and mb_detect_encoding($Token_Database_Path, 'UTF-8', True) === 'UTF-8' and mb_detect_encoding($Execution_Token, 'UTF-8', True) === 'UTF-8' and $this->is_Class_Allowed($Execution_Token) === True)
             {
                 echo PHP_EOL.' [ I ] ( Control_Flow Class )               Initializing Control Flow Class.';
                 (require_once 'Array_Library.php') or exit;
                 (require_once 'Logger.php') or exit;
-                (class_exists(\iZiTA\Array_Library::class, False) === True && enum_exists(\iZiTA\Array_Library::class, False) === False) ? (($this->Array_Library = new \iZiTA\Array_Library() ?? exit) ? (($this->is_Array_Library = True ?? exit) ?: exit) : exit) : exit;
-                (class_exists(\iZiTA\Logger::class, False) === True && enum_exists(\iZiTA\Logger::class, False) === False) ?: exit;
+                if(class_exists(\iZiTA\Array_Library::class, False) === True and enum_exists(\iZiTA\Array_Library::class, False) === False and isset($this->Array_Library) === False and $this->Array_Library = new \iZiTA\Array_Library() and isset($this->Array_Library) === True and $this->Array_Library instanceof \iZiTA\Array_Library and isset($this->is_Array_Library) === False and $this->is_Array_Library = True and isset($this->is_Array_Library) === True and $this->is_Array_Library === True)
+                {
+                    echo PHP_EOL.' [ I ] ( Control_Flow Class )               Control Flow loaded Array_Library.';
+                }else
+                {
+                    echo PHP_EOL.' [ I ] ( Control_Flow Class )               Control Flow failed loading Array_Library.';
+                    exit;
+                }
+                (class_exists(\iZiTA\Logger::class, False) === True and enum_exists(\iZiTA\Logger::class, False) === False) ?: exit;
                 $is_configuration_loaded = False;
                 if($is_configuration_loaded = ($this->Load_Configuration($Token_Database_Path) ?? False) and is_array($is_configuration_loaded) === True and empty($is_configuration_loaded) === False and isset($this->Control_Flow_Database) === False and $this->Control_Flow_Database = $is_configuration_loaded and isset($this->Control_Flow_Database) === True)
                 {
@@ -103,7 +110,7 @@ namespace iZiTA
         /**
          * Check if the Class is allowed to run.
          * @param String $Execution_Token
-         * @return bool Returns <b>True</b> if allowed to execute <b>False</b> otherwise.
+         * @return Bool Returns <b>True</b> if allowed to execute <b>False</b> otherwise.
          */
         Private Function is_Class_Allowed(String $Execution_Token = ''): Bool
         {
@@ -111,55 +118,49 @@ namespace iZiTA
             {
                 return False;
             }
-            if(isset($Execution_Token) === True and empty($Execution_Token) === False and mb_detect_encoding($Execution_Token, 'UTF-8', true) === 'UTF-8' and isset($Execution_Token[63]) === True and isset($Execution_Token[64]) === False)
+            if(isset($Execution_Token) === True and empty($Execution_Token) === False and mb_detect_encoding($Execution_Token, 'UTF-8', True) === 'UTF-8' and isset($Execution_Token[161]) === True and isset($Execution_Token[162]) === False)
             {
-                $Execution_Token = (preg_replace("/[^a-zA-Z0-9]/", '', $Execution_Token) ?? '') ?: '';
-                $Day_Month_Year = hash('sha3-256', date("d:m:Y")) ?: '';
-                $Execution_Token_File = '../Dba/InternalAccess/'.$Day_Month_Year.'/'.$Execution_Token.'.izita';
-                $Execution_Token = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-                $Day_Month_Year = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-                unset($Execution_Token);
-                unset($Day_Month_Year);
-                if(isset($Execution_Token_File[156]) === True and isset($Execution_Token_File[157]) === False and file_exists($Execution_Token_File) === True and filetype($Execution_Token_File) === 'file')
+                $Execution_Token = (preg_replace("/[^a-zA-Z0-9:]/", '', $Execution_Token) ?? '') ?: '';
+                $HMAC_Secret_Key = explode(':',$Execution_Token)[0] ?? '' ?: '';
+                $Payload =  explode(':',$Execution_Token)[1] ?? '' ?: '';
+                $Execution_Token = explode(':',$Execution_Token)[2] ?? '' ?: '';
+                $Day_Month_Year_Hour = hash('sha3-256', date("d:m:Y:H")) ?: '';
+                $Check = hash_hmac('SHA3-256', $Day_Month_Year_Hour.$Payload, $HMAC_Secret_Key);
+                $Execution_Token_File = '../Dba/InternalAccess/'.$Day_Month_Year_Hour.'/'.$Execution_Token.'.izita';
+                $Day_Month_Year_Hour = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+                unset($Day_Month_Year_Hour);
+                if($Check === $Execution_Token and hash_equals($Check, $Execution_Token) === True and isset($Execution_Token_File[156]) === True and isset($Execution_Token_File[157]) === False and file_exists($Execution_Token_File) === True and filetype($Execution_Token_File) === 'file' and (filesize($Execution_Token_File) ?? 0) === 1)
                 {
-                    $Execution_File_Size = (filesize($Execution_Token_File) ?? 0) ?: 0;
-                    if($Execution_File_Size === 1 or $Execution_File_Size === 2)
+                    $Execution_Token = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+                    unset($Execution_Token);
+                    $read_execution_file = (file_get_contents($Execution_Token_File, length:1) ?? '') ?: '';
+                    if(mb_detect_encoding($read_execution_file, 'UTF-8', True) === 'UTF-8')
                     {
-                        if($Execution_File_Size === 2)
+                        $read_execution_file = (preg_replace("/[^2]/", '', $read_execution_file) ?? '') ?: '';
+                        if($read_execution_file === '2' and file_put_contents($Execution_Token_File, '',LOCK_EX) === 0 and unlink($Execution_Token_File) === True)
                         {
-                            echo PHP_EOL.' [ I ] ( is_Class_Allowed )                 Info: Execution file written through external sources.';
-                        }
-                        unset($Execution_File_Size);
-                        $read_execution_file = (file_get_contents($Execution_Token_File) ?? '') ?: '';
-                        if(mb_detect_encoding($read_execution_file, 'UTF-8', true) === 'UTF-8')
-                        {
-                            $read_execution_file = (preg_replace("/[^2]/", '', $read_execution_file) ?? '') ?: '';
-                            if($read_execution_file === '2')
-                            {
-                                file_put_contents($Execution_Token_File, '',LOCK_EX);
-                                unlink($Execution_Token_File);
-                                $Execution_Token_File = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-                                unset($Execution_Token_File);
-                                return True;
-                            }else
-                            {
-                                echo PHP_EOL.' [ I!CF ] ( is_Class_Allowed )              Error: Verifying execution access failed. No execution data.';
-                            }
+                            $Execution_Token_File = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+                            unset($Execution_Token_File);
+                            echo PHP_EOL.' [ I_CF ] ( is_Class_Allowed )              Class is allowed to initialize.';
+                            return True;
                         }else
                         {
-                            echo PHP_EOL.' [ I!CF ] ( is_Class_Allowed )              Error: Verifying execution access failed. Wrong data format.';
+                            echo PHP_EOL.' [ I!CF ] ( is_Class_Allowed )              Error: Verifying execution access failed. No execution data.';
                         }
                     }else
                     {
-                        echo PHP_EOL.' [ I!CF ] ( is_Class_Allowed )              Error: Verifying execution access failed. Wrong file size.';
+                        echo PHP_EOL.' [ I!CF ] ( is_Class_Allowed )              Error: Verifying execution access failed. Wrong data format.';
                     }
                 }elseif(isset($Execution_Token_File[156]) === True and isset($Execution_Token_File[157]) === False and file_exists($Execution_Token_File) === False)
                 {
-                    echo PHP_EOL.' [ I!CF ] ( is_Class_Allowed )              Error: Execution path is not provided.';
+                    echo PHP_EOL.' [ I!CF ] ( is_Class_Allowed )              Error: Initialization of class is not allowed.';
                 }else
                 {
-                    echo PHP_EOL.' [ I!CF ] ( is_Class_Allowed )              Error: Execution path is malformed.';
+                    echo PHP_EOL.' [ I!CF ] ( is_Class_Allowed )              Error: Initialization data is malformed.';
                 }
+            }else
+            {
+                echo PHP_EOL.' [ I!CF ] ( is_Class_Allowed )              Error: Initialization data is malformed.';
             }
             return False;
         }
@@ -170,7 +171,7 @@ namespace iZiTA
          */
         Private Function Load_Configuration(String $Token_Database_Path = ''): array|Bool
         {
-            if(isset($this->is_configuration_loaded) === False and isset($this->Control_Flow_Database) === False and empty($this->Shadow_Control_Flow_Database) === True and self::$is_it_Constructed === False)
+            if(isset($this->is_configuration_loaded) === False and isset($this->Control_Flow_Database) === False and isset($this->Shadow_Control_Flow_Database) === True and empty($this->Shadow_Control_Flow_Database) === True and self::$is_it_Constructed === False)
             {
                 if(isset($Token_Database_Path) === True and empty($Token_Database_Path) === False and is_string($Token_Database_Path) === True and mb_detect_encoding($Token_Database_Path, 'UTF-8', true) === 'UTF-8')
                 {
@@ -301,7 +302,6 @@ namespace iZiTA
                 }
                 set(Bool $Expelliarmus)
                 {
-                    echo 'SS';
                     $this->Execution_Expelliarmus = True;
                     exit;
                 }
@@ -390,6 +390,7 @@ namespace iZiTA
         //</editor-fold>
         //<editor-fold desc="Private Structure Execution Controller Variables [v1]">
         Private Bool $Current_Script_Set = False;
+        Private Bool $Current_Script_Times = False;
         /**
          * [ P ] Disables write access to the Execution Tokens.<br>
          * When the boolean is True shared functions won't execute writes to the specified internal objects/variables/functions.
@@ -446,7 +447,8 @@ namespace iZiTA
                                 {# The Shadow_Control_Flow_Database index in pos - 1 from this one should exist
                                     $Out_Of_Bounds = False;
                                     $Shadow_Control_Flow_Database = $this->Shadow_Control_Flow_Database[$Script_Depth][$Current_Script_Access];
-                                    $Shadow_Control_Flow_Database = ($this->Array_Library->Array_Get_Last($Shadow_Control_Flow_Database, 3) ?? ['AA']);
+                                    $Shadow_Control_Flow_Database = ($this->Array_Library->Array_Get_Last($Shadow_Control_Flow_Database, 4) ?? ['AA']);
+                                    //print_r($Shadow_Control_Flow_Database);
                                     $Shadow_Last = 0;
                                     if(is_array($Shadow_Control_Flow_Database) === True)
                                     {
@@ -768,7 +770,7 @@ namespace iZiTA
                             $Shadow_Corruption_Status = 0;
                             if(is_array($Shadow_Data) === True and empty($Shadow_Data) === False)
                             {
-                                $is_Shadow_Data = ($this->Array_Library->Array_Get_Last($Shadow_Data) ?? ['']);
+                                $is_Shadow_Data = ($this->Array_Library->Array_Get_Last(Array: $Shadow_Data) ?? ['']);
                                 $Enrol_Next_Depth = True;
                                 foreach($is_Shadow_Data as $Check_Last)
                                 {# Scan and verify all the previous Shadow_Control_Flow_Database.
@@ -1038,18 +1040,18 @@ namespace iZiTA
                     $this->Current_Script_Access = $New_Script_Depth.':'.$Sub_Script_Depth;
                     return $New_Script_Depth;
                 }
-                set(String $value)
+                set(String $Set_Current_Script_Access)
                 {
-                    if(str_contains($value, ':') === False or $value != 'NO_ACCESS')
+                    if(str_contains($Set_Current_Script_Access, ':') === False or $Set_Current_Script_Access != 'NO_ACCESS')
                     {# Value can't contain special character.
                         $Current_Script_Access = (explode(':', $this->Current_Script_Access)[0] ?? '') ?: ($Current_Script_Access = $this->Current_Script_Access);
-                        if(isset($this->Control_Flow_Database[$this->Script_Depth + 1][$value][0]) === True and isset($this->Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$this->Sub_Script_Depth + 1]) === False and isset($this->Shadow_Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$this->Sub_Script_Depth]) === True)
+                        if(isset($this->Control_Flow_Database[$this->Script_Depth + 1][$Set_Current_Script_Access][0]) === True and isset($this->Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$this->Sub_Script_Depth + 1]) === False and isset($this->Shadow_Control_Flow_Database[$this->Script_Depth][$Current_Script_Access][$this->Sub_Script_Depth]) === True)
                         {# If special value found then proceed with updating status check. Do not change value if Control Flow Database is not at the end.
                             $Current_Script_Depth = $this->Script_Depth;
                             $this->Script_Depth += 1;
                             if(($Current_Script_Depth += 1) === $this->Script_Depth)
                             {
-                                $this->Current_Script_Access = $value;
+                                $this->Current_Script_Access = $Set_Current_Script_Access;
                                 $this->Sub_Script_Depth = 0;
                                 if($this->Sub_Script_Depth === 0)
                                 {
@@ -1065,15 +1067,15 @@ namespace iZiTA
                             {
                                 echo ' [ ! ] ( Current_Script_Access )            Failed to change script depth ignoring further actions.';
                             }
-                        }elseif(isset($this->Script_Depth) === True and isset($this->Sub_Script_Depth) === True and $this->Script_Depth === 0 and $this->Sub_Script_Depth === 0 and isset($this->Control_Flow_Database[0][$value][0]) === True and isset($this->Shadow_Control_Flow_Database[0][$value][0]) === False)
+                        }elseif(isset($this->Script_Depth) === True and isset($this->Sub_Script_Depth) === True and $this->Script_Depth === 0 and $this->Sub_Script_Depth === 0 and isset($this->Control_Flow_Database[0][$Set_Current_Script_Access][0]) === True and isset($this->Shadow_Control_Flow_Database[0][$Set_Current_Script_Access][0]) === False)
                         {# Set the beginning of the execution control flow
                             echo PHP_EOL . ' [ + ] ( Current_Script_Access )            Current Script Access Set Done.';
                             $this->Current_Script_Set = True;
-                            $this->Current_Script_Access = $value;
+                            $this->Current_Script_Access = $Set_Current_Script_Access;
                             $this->Sub_Script_Depth = 0;
                         }else
                         {
-                            echo PHP_EOL . ' [ ! ] ( Current_Script_Access )            Could not set Current Script Access';
+                            echo PHP_EOL . ' [ ! ] ( Current_Script_Access )            Could not set Current Script Access ['.$Set_Current_Script_Access.']';
                         }
                     }
                 }
@@ -1152,7 +1154,7 @@ namespace iZiTA
                             if($temp_token !== 'Error.')
                             {
                                 $temp_token = '';
-                                echo PHP_EOL.' [ + ] ( Execution_Guard )                  Execution OK.';
+                                echo PHP_EOL.' [ + ] ( Execution_Guard )                  Execution status: OK_Verified.';
                                 return $OK_MESSAGE.$Execution_Token.':'.$this->Shadow_Execution_Token;
                             }
                         }else
@@ -1353,7 +1355,7 @@ namespace iZiTA
          */
         Final Function Get_Script_Depth(): Int|Bool
         {
-                return ($this->Script_Depth ?? False);
+            return ($this->Script_Depth ?? False);
         }
         //</editor-fold>
         //<editor-fold desc="Final Shared Functions">
